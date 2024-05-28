@@ -16,6 +16,16 @@
 #define LCD_CS   A3 //Chip Select Pin : Active Low
 #define LCD_RST  A4 //Shield Reset
 
+void setup_pins() {
+  DDRD = DDRD | B11111100;
+  // Setting Pin 8-9 as Output
+  DDRB = DDRB | B00000011;
+  //Setting Analog Pins A4-A0 as Output
+  DDRC = DDRC | B00011111;
+  // Setting Analog Pins A4-A0 as HIGH
+  PORTC = PORTC | B00011111;
+}
+
 void LCD_write(uint8_t d) {
   // Serves as write signal/command at the rising edge
   digitalWrite(LCD_WR, LOW); // WR 0
@@ -46,6 +56,7 @@ void LCD_data_write(uint8_t data) {
 }
 
 void Lcd_Init(void) {
+  setup_pins();
   //void does not return any value
   //void only execute instruction within it
   //similar to void setup and loop
@@ -104,13 +115,13 @@ void Address_set(int16_t y1, int16_t y2, int16_t x1, int16_t x2) {
 }
 
 void drawPixel(int16_t x, int16_t y, uint16_t color) {
-  Address_set(y, y, x, x);
+  Address_set(x, x, y, y);
   LCD_data_write(color >> 8);
   LCD_data_write(color);
 }
 
 void drawRect(int16_t x, int16_t y, uint16_t width, uint16_t height, uint16_t color) {
-  Address_set(y, y + height, x, x + width);
+  Address_set(x, x + width, y, y + height);
   digitalWrite(LCD_RS, HIGH);
   for (int i = 0; i < height + 1; i++) {
     for (int j = 0; j < width + 1; j++) {
