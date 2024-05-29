@@ -16,6 +16,9 @@
 #define LCD_CS   A3 //Chip Select Pin : Active Low
 #define LCD_RST  A4 //Shield Reset
 
+#define LCD_WIDTH 240
+#define LCD_HEIGHT 320
+
 void setup_pins() {
   DDRD = DDRD | B11111100;
   // Setting Pin 8-9 as Output
@@ -98,7 +101,7 @@ void Lcd_Init(void) {
   LCD_command_write(0x2c);    //Memory Write | DataSheet Page 245
 }
 
-void Address_set(int16_t y1, int16_t y2, int16_t x1, int16_t x2) {
+void set_address(int16_t y1, int16_t y2, int16_t x1, int16_t x2) {
   LCD_command_write(0x2a);  //Column Address Set | DataSheet Page 110
   LCD_data_write(y1 >> 8);  //8 Bit Shift Right of x1
   LCD_data_write(y1);       //Value of x1
@@ -114,25 +117,68 @@ void Address_set(int16_t y1, int16_t y2, int16_t x1, int16_t x2) {
   LCD_command_write(0x2c); // REG 2Ch = Memory Write
 }
 
-void drawPixel(int16_t x, int16_t y, uint16_t color) {
-  Address_set(x, x, y, y);
+void draw_pixel(int16_t x, int16_t y, uint16_t color) {
+  set_address(x, x, y, y);
   LCD_data_write(color >> 8);
   LCD_data_write(color);
 }
 
-void drawRect(int16_t x, int16_t y, uint16_t width, uint16_t height, uint16_t color) {
-  Address_set(x, x + width, y, y + height);
+void draw_rect(int16_t x, int16_t y, uint16_t width, uint16_t height, uint16_t color) {
+  set_address(x, x + width, y, y + height);
   digitalWrite(LCD_RS, HIGH);
   for (int i = 0; i < height + 1; i++) {
     for (int j = 0; j < width + 1; j++) {
-      digitalWrite(LCD_WR, LOW); // WR 0
-      PORTD = (PORTD & B00000011) | ((color >> 8) & B11111100);
-      PORTB = (PORTB & B11111100) | ((color >> 8) & B00000011);
-      digitalWrite(LCD_WR, HIGH); // WR 1
-      digitalWrite(LCD_WR, LOW); // WR 0
-      PORTD = (PORTD & B00000011) | ((color) & B11111100);
-      PORTB = (PORTB & B11111100) | ((color) & B00000011);
-      digitalWrite(LCD_WR, HIGH); // WR 1
+      LCD_write(color >> 8);
+      LCD_write(color);
+    }
+  }
+}
+
+void draw_frame(int16_t x, int16_t y, uint16_t width, uint16_t height, uint16_t thickness, uint16_t color) {
+  set_address(x, x + width, y, y + thickness);
+  digitalWrite(LCD_RS, HIGH);
+  for (int i = 0; i < thickness + 1; i++) {
+    for (int j = 0; j < width + 1; j++) {
+      LCD_write(color >> 8);
+      LCD_write(color);
+    }
+  }
+
+  set_address(x, x + width, y + height - thickness, y + height);
+  digitalWrite(LCD_RS, HIGH);
+  for (int i = 0; i < thickness + 1; i++) {
+    for (int j = 0; j < width + 1; j++) {
+      LCD_write(color >> 8);
+      LCD_write(color);
+    }
+  }
+
+  set_address(x, x + thickness, y, y + height);
+  digitalWrite(LCD_RS, HIGH);
+  for (int i = 0; i < height + 1; i++) {
+    for (int j = 0; j < thickness + 1; j++) {
+      LCD_write(color >> 8);
+      LCD_write(color);
+    }
+  }
+
+  set_address(x + width - thickness, x + width, y, y + height);
+  digitalWrite(LCD_RS, HIGH);
+  for (int i = 0; i < height + 1; i++) {
+    for (int j = 0; j < thickness + 1; j++) {
+      LCD_write(color >> 8);
+      LCD_write(color);
+    }
+  }
+}
+
+void fill(uint16_t color=0) {
+  set_address(0, LCD_WIDTH, 0, LCD_HEIGHT);
+  digitalWrite(LCD_RS, HIGH);
+  for (int i = 0; i < LCD_WIDTH + 1; i++) {
+    for (int j = 0; j < LCD_HEIGHT + 1; j++) {
+      LCD_write(color >> 8);
+      LCD_write(color);
     }
   }
 }
