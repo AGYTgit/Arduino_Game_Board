@@ -10,11 +10,13 @@ uint16_t rgb(int r, int g, int b) {
   return (r5 << 11) | (g6 << 5) | b5;
 }
 
+arduino_ST7789V lcd = arduino_ST7789V();
+
 void setup() {
-  Lcd_Init();
+  lcd.Lcd_Init();
   Serial.begin(9600);
 
-  fill();
+  lcd.fill();
 }
 
 void loop() {
@@ -45,15 +47,15 @@ void loop() {
 
 
   
-  // for (int i = 0; i < 20; i++) {
-  //   draw_rect(112, 0 + (i - 1) * 16, 16, 16, rgb(0,0,0));
-  //   draw_rect(96, 16 + (i - 1) * 16, 16, 16, rgb(0,0,0));
-  //   draw_rect(128, 16 + (i - 1) * 16, 16, 16, rgb(0,0,0));
+  for (int i = 0; i < 20; i++) {
+    lcd.draw_rect(112, 0 + (i - 1) * 16, 16, 16, rgb(0,0,0));
+    lcd.draw_rect(96, 16 + (i - 1) * 16, 16, 16, rgb(0,0,0));
+    lcd.draw_rect(128, 16 + (i - 1) * 16, 16, 16, rgb(0,0,0));
 
-  //   draw_rect(112, 0 + i * 16, 16, 16, rgb(255,0,255));
-  //   draw_rect(96, 16 + i * 16, 16, 16, rgb(255,0,255));
-  //   draw_rect(112, 16 + i * 16, 16, 16, rgb(255,0,255));
-  //   draw_rect(128, 16 + i * 16, 16, 16, rgb(255,0,255));
-  //   delay(500);
-  // }
+    lcd.draw_rect(112, 0 + i * 16, 16, 16, rgb(255,0,255));
+    lcd.draw_rect(96, 16 + i * 16, 16, 16, rgb(255,0,255));
+    lcd.draw_rect(112, 16 + i * 16, 16, 16, rgb(255,0,255));
+    lcd.draw_rect(128, 16 + i * 16, 16, 16, rgb(255,0,255));
+    delay(500);
+  }
 }
