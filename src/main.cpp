@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <VS7789V.h>
 
+#include <block/block.h>
+
 // Function to convert RGB to 16-bit color
 uint16_t rgb(int r, int g, int b) {
   uint16_t r5 = (r >> 3) & 0x1F;  // 5 bits
