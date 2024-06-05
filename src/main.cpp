@@ -1,7 +1,11 @@
 #include <Arduino.h>
 #include <VS7789V.h>
 
-#include <block/block.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcdtft(0x27, 16, 2);
+
+// #include <block/block.h>
 
 // Function to convert RGB to 16-bit color
 uint16_t rgb(int r, int g, int b) {
@@ -17,9 +21,10 @@ arduino_ST7789V lcd = arduino_ST7789V();
 
 void setup() {
   lcd.Init();
-  Serial.begin(9600);
-
   lcd.fill();
+
+  lcdtft.init();
+  lcdtft.backlight();
 }
 
 void loop() {
@@ -60,5 +65,18 @@ void loop() {
     lcd.draw_rect(112, 16 + i * 16, 16, 16, rgb(255,0,255));
     lcd.draw_rect(128, 16 + i * 16, 16, 16, rgb(255,0,255));
     delay(500);
+
+    lcdtft.setCursor(8,0);
+    lcdtft.print("        ");
+    for (int i = 0, j = 7; i < 8; i++, j--) {
+      lcdtft.setCursor(i,0);
+      lcdtft.print((((PORTD & B11111100) | (PORTB & B00000011)) >> j) & 0x01);
+    }
+    lcdtft.setCursor(8,1);
+    lcdtft.print("        ");
+    for (int i = 0, j = 7; i < 8; i++, j--) {
+      lcdtft.setCursor(i,1);
+      lcdtft.print((PORTD >> j) & 0x01);
+    }
   }
 }
