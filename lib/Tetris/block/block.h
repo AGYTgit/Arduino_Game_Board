@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#include <board_constants.h>
+#include <tetris_settings.h>
 
 #include <block_codes/block_codes.h>
 
