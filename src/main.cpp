@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ST7789V.h>
 
-#include <block_codes/block_codes.h>
+#include <block_data/block_data.h>
 
 #include <board/board.h>
 
@@ -12,17 +12,30 @@
 // #include <block/block.h>
 
 ST7789V lcd = ST7789V();
-Board b = Board();
+Board board = Board();
 
 void setup() {
   lcd.Init();
   lcd.fill();
 
-  b.draw(lcd);
+  board.draw(lcd);
 
   // lcdtft.init();
   // lcdtft.backlight();
+
+  int block = 1;
+  int bit_index = 7;
+  for (int y = 0; y < (BLOCK_DATA[block].DIMENSIONS >> 4); y++) {
+    for (int x = 0; x < (BLOCK_DATA[block].DIMENSIONS & 0x0F); x++) {
+      if ((B10011100 >> bit_index) & 0x01) {
+        board.board_matrix[y][x][1] = 'I';
+      }
+      bit_index--;
+    }
+  }
+  board.draw(lcd);
 }
+int block = 0;
 
 void loop() {
   // if (Serial.available()) {
@@ -62,22 +75,25 @@ void loop() {
     // lcd.draw_rect(112, 16 + i * 16, 16, 16, lcd.rgb(255,0,255));
     // lcd.draw_rect(128, 16 + i * 16, 16, 16, lcd.rgb(255,0,255));
 
-    for (unsigned int y = 0; y < T::SIZE; y++) {
-      for (unsigned int x = 0; x < T::SIZE; x++) {
-        if (T::SHAPE[0][y][x] != 0) {
-          b.board_matrix[i + y][3 + x][1] = 'B';
-        }
-      }
-    }
-    for (unsigned int y = 0; y < T::SIZE; y++) {
-      for (unsigned int x = 0; x < T::SIZE; x++) {
-        if (T::SHAPE[0][y][x] != 0) {
-          b.board_matrix[i + y + 1][3 + x][1] = T::CODE;
-        }
-      }
-    }
-    b.draw(lcd);
-    delay(500);
+    // if (i == 19) {
+    //   block = ((block + 1) % 8);
+    // }
+    // for (int y = 0; y < (BLOCK_DATA[block].DIMENSIONS & 0x0F); y++) {
+    //   for (int x = 0; x < (BLOCK_DATA[block].DIMENSIONS >> 4); x++) {
+    //     if ((BLOCK_DATA[block].SHAPE >> ((7 - (x + y)) % 8)) & 0x01) {
+    //       board.board_matrix[i + x - 1][3 + y][1] = 'B';
+    //     }
+    //   }
+    // }
+    // for (int y = 0; y < (BLOCK_DATA[block].DIMENSIONS & 0x0F); y++) {
+    //   for (int x = 0; x < (BLOCK_DATA[block].DIMENSIONS >> 4); x++) {
+    //     if ((BLOCK_DATA[block].SHAPE >> ((7 - (x + y)) % 8)) & 0x01) {
+    //       board.board_matrix[i + x][3 + y][1] = 'I';
+    //     }
+    //   }
+    // }
+    // board.draw(lcd);
+    // delay(500);
 
     // lcdtft.setCursor(8,0);
     // lcdtft.print("        ");
