@@ -7,22 +7,22 @@ ST7789V::ST7789V() {
 }
 
 void ST7789V::setup_pins() {
-    // DDRD = DDRD | B11111100;
-    // DDRB = DDRB | B00000011;
-    // DDRC = DDRC | B00011111;
-    // PORTC = PORTC | B00011111;
-
-    DDRD = B11111111;
+    DDRD = DDRD | B11111100;
+    DDRB = DDRB | B00000011;
     DDRC = DDRC | B00011111;
     PORTC = PORTC | B00011111;
+
+    // DDRD = B11111111;
+    // DDRC = DDRC | B00011111;
+    // PORTC = PORTC | B00011111;
 }
 
 void ST7789V::LCD_write(uint8_t d) {
     digitalWrite(LCD_WR, LOW);
-    // PORTD = (PORTD & B00000011) | ((d) & B11111100);
-    // PORTB = (PORTB & B11111100) | ((d) & B00000011);
+    PORTD = (PORTD & B00000011) | ((d) & B11111100);
+    PORTB = (PORTB & B11111100) | ((d) & B00000011);
 
-    PORTD = d;
+    // PORTD = d;
     digitalWrite(LCD_WR, HIGH);
 }
 

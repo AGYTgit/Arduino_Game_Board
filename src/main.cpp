@@ -1,15 +1,13 @@
 #include <Arduino.h>
 #include <ST7789V.h>
 
-#include <block_data/block_data.h>
-
 #include <board/board.h>
+
+#include <block_data/block_data.h>
 
 // #include <LiquidCrystal_I2C.h>
 
 // LiquidCrystal_I2C lcdtft(0x27, 16, 2);
-
-// #include <block/block.h>
 
 ST7789V lcd = ST7789V();
 Board board = Board();
@@ -18,24 +16,29 @@ void setup() {
   lcd.Init();
   lcd.fill();
 
+  Block block = {5, 2, 0, 0};
+
+  for (int i = 0; i < 4; i++) {
+    board.add_block(block.BLOCK_CODE, block.X, block.Y + (i * 4), i);
+  }
+
   board.draw(lcd);
 
   // lcdtft.init();
   // lcdtft.backlight();
 
-  int block = 1;
-  int bit_index = 7;
-  for (int y = 0; y < (BLOCK_DATA[block].DIMENSIONS >> 4); y++) {
-    for (int x = 0; x < (BLOCK_DATA[block].DIMENSIONS & 0x0F); x++) {
-      if ((B10011100 >> bit_index) & 0x01) {
-        board.board_matrix[y][x][1] = 'I';
-      }
-      bit_index--;
-    }
-  }
-  board.draw(lcd);
+  // for (int block = 0; block < 7; block++) {     // draw all blocks
+  //   int bit_index = 7;
+  //   for (int y = 0; y < (BLOCK_DATA[block].DIMENSIONS >> 4); y++) {
+  //     for (int x = 0; x < (BLOCK_DATA[block].DIMENSIONS & 0x0F); x++) {
+  //       if ((BLOCK_DATA[block].SHAPE >> bit_index) & 0x01) {
+  //         board.board_matrix[y + (block * 2)][x][1] = block;
+  //       }
+  //       bit_index--;
+  //     }
+  //   }
+  // }
 }
-int block = 0;
 
 void loop() {
   // if (Serial.available()) {
@@ -65,7 +68,7 @@ void loop() {
 
 
   
-  for (int i = 0; i < 20; i++) {
+  // for (int i = 0; i < 20; i++) {
     // lcd.draw_rect(112, 0 + (i - 1) * 16, 16, 16, lcd.rgb(0,0,0));
     // lcd.draw_rect(96, 16 + (i - 1) * 16, 16, 16, lcd.rgb(0,0,0));
     // lcd.draw_rect(128, 16 + (i - 1) * 16, 16, 16, lcd.rgb(0,0,0));
@@ -107,5 +110,5 @@ void loop() {
     //   lcdtft.setCursor(i,1);
     //   lcdtft.print((PORTD >> j) & 0x01);
     // }
-  }
+  // }
 }
