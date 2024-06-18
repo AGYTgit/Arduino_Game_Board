@@ -1,56 +1,53 @@
-#include <Arduino.h>
 #include <ST7789V.h>
 
-#include <board/board.h>
+// #include <board/board.h>
 
-#include <block_data/block_data.h>
+// #include <block_data/block_data.h>
 
-// #include <LiquidCrystal_I2C.h>
+// ST7789V lcd = ST7789V();
+// Board board = Board();
 
-// LiquidCrystal_I2C lcdtft(0x27, 16, 2);
-
-ST7789V lcd = ST7789V();
-Board board = Board();
-
-Block block = {5, 3, 0, 0};
+// Block block = {5, 3, 0, 0};
 
 void setup() {
-  lcd.Init();
-  lcd.fill();
+  Serial.begin(9600);
 
-  // lcdtft.init();
-  // lcdtft.backlight();
+  // lcd.Init();
+  // lcd.fill();
 
-  DDRB |= B00110000;
-  DDRB &= B11110011;
-  PORTB |= B00001100;
-  PORTB &= B11001111;
+  DDRD |= B11100000; // button input
+  PORTD |= B11100000;
+  
+  DDRB &= B11111000; // button output
+  PORTB &= B11111000;
 
-  board.add_block(block);
-  board.draw(lcd);
+  // board.add_block(block);
+  // board.draw(lcd);
 }
 
-bool test[2] = {true, true};
+bool test[3][3] = {
+  {true,true,true},
+  {true,true,true},
+  {true,true,true}
+};
 
 void loop() {
-  if ((PINB & 1<<2) == 0 && test[0] == true) {
-    test[0] = false;
-  } else if ((PINB & 1<<2) != 0 && test[0] == false) {
-    test[0] = true;
-    board.remove_block(block);
-    block.ROTATION = (block.ROTATION + 1) % 4;
-    board.add_block(block);
-    board.draw(lcd);
+  for (int i = 7; i > 4; i--) {
+    PORTD = 001<<i;
+    for (int j = 0; j < 3; j++) {
+      PORTB = ~(001<<j);
+      Serial.println(PIND, BIN);
+      Serial.println(PINB, BIN);
+      Serial.println("  ----  ");
+      if (digitalRead(i) == LOW && test[i - 5][j]) {
+        test[i - 5][j] = false;
+      } else if (digitalRead(i) != LOW && !test[i - 5][j]) {
+        test[i - 5][j] = true;
+        Serial.print(i);
+        Serial.print(' ');
+        Serial.println(j);
+      }
+      delayMicroseconds(50);
+    }
   }
-
-  if ((PINB & 1<<3) == 0 && test[1] == true) {
-    test[1] = false;
-  } else if ((PINB & 1<<3) != 0 && test[1] == false) {
-    test[1] = true;
-    board.remove_block(block);
-    block.ROTATION = (block.ROTATION + 3) % 4;
-    board.add_block(block);
-    board.draw(lcd);
-  }
-  delayMicroseconds(500);
 }
