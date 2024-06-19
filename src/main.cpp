@@ -1,4 +1,6 @@
-#include <ST7789V.h>
+#include <Arduino.h>
+
+// #include <ST7789V.h>
 
 // #include <board/board.h>
 
@@ -15,39 +17,28 @@ void setup() {
   // lcd.Init();
   // lcd.fill();
 
-  DDRD |= B11100000; // button input
-  PORTD |= B11100000;
+  pinMode(7, INPUT_PULLUP);
+  digitalWrite(7, HIGH);
   
-  DDRB &= B11111000; // button output
-  PORTB &= B11111000;
+  pinMode(8, OUTPUT);
 
   // board.add_block(block);
   // board.draw(lcd);
 }
 
-bool test[3][3] = {
-  {true,true,true},
-  {true,true,true},
-  {true,true,true}
-};
+// bool test[3][3] = {
+//   {true,true,true},
+//   {true,true,true},
+//   {true,true,true}
+// };
 
 void loop() {
-  for (int i = 7; i > 4; i--) {
-    PORTD = 001<<i;
-    for (int j = 0; j < 3; j++) {
-      PORTB = ~(001<<j);
-      Serial.println(PIND, BIN);
-      Serial.println(PINB, BIN);
-      Serial.println("  ----  ");
-      if (digitalRead(i) == LOW && test[i - 5][j]) {
-        test[i - 5][j] = false;
-      } else if (digitalRead(i) != LOW && !test[i - 5][j]) {
-        test[i - 5][j] = true;
-        Serial.print(i);
-        Serial.print(' ');
-        Serial.println(j);
-      }
-      delayMicroseconds(50);
-    }
-  }
+  // if (digitalRead(7) != 0 && test[0]) {
+  //   test[0][0] = false;
+  //   Serial.println(0);
+  // } else if (digitalRead(7) == 0 && !test[0]) {
+  //   test[0][0] = true;
+  //   Serial.println(1);
+  // }
+  Serial.println(digitalRead(7));
 }
