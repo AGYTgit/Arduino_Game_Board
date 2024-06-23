@@ -73,6 +73,54 @@ void Board::remove_block(Block block) {
     }
 }
 
+void Board::move_block(Block& block, int move_direction) {
+    this->remove_block(block);
+    if (move_direction != 0) {
+        switch (move_direction) {
+            case DIRECTION::UP:
+                if (block.Y > 0) {
+                    block.Y--;
+                }
+                break;
+            case DIRECTION::DOWN:
+                if (block.Y < BOARD::HEIGHT - (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4)) {
+                    block.Y++;
+                }
+                break;
+            case DIRECTION::LEFT:
+                if (block.X > 0) {
+                    block.X--;
+                }
+                break;
+            case DIRECTION::RIGHT:
+                if (block.X < BOARD::WIDTH - (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F)) {
+                    block.X++;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    this->add_block(block);
+}
+
+void Board::rotate_block(Block& block, int rotate_direction) {
+    this->remove_block(block);
+    if (rotate_direction != 0) {
+        switch (rotate_direction) {
+            case DIRECTION::CW:
+                block.ROTATION = (block.ROTATION + 1) % 4;
+                break;
+            case DIRECTION::CCW:
+                block.ROTATION = (block.ROTATION - 1 + 4) % 4;
+                break;
+            default:
+                break;
+        }
+    }
+    this->add_block(block);
+}
+
 // int Board::clear_completed_lines() {
 //     int amount = 0;
 //     for (int i = 0; i < BOARD::HEIGHT; i++) {

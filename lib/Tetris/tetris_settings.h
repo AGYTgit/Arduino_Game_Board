@@ -17,17 +17,14 @@ namespace SHAPE {
     const byte WIDTH = 4;
 } // namespace SHAPE
 
-namespace MOVE {
-    const byte UP = 0;
-    const byte DOWN = 1;
-    const byte LEFT = 2;
-    const byte RIGHT = 3;
+namespace DIRECTION {
+    const byte UP = 1;
+    const byte DOWN = 2;
+    const byte LEFT = 3;
+    const byte RIGHT = 4;
+
+    const byte CW = 1;
+    const byte CCW = 2;
 } // namespace MOVE
-
-namespace ROTATE {
-    const bool CW = 0;
-    const bool CCW = 1;
-} // namespace ROTATE
-
 
 #endif // BOARD_CONSTANTS_H

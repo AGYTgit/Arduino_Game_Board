@@ -10,7 +10,7 @@ struct Block {
 
 struct Block_data {
     uint16_t COLOR;       // r 5-bit, g 6-bit, b 5-bit
-    uint8_t DIMENSIONS;   // width first 4-bits, height second 4-bits
+    uint8_t DIMENSIONS;   // height first 4-bits, width second 4-bits
     uint8_t SHAPE;        // top half first 4-bits, bottom half second 4-bits
 };
 

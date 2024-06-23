@@ -15,6 +15,9 @@ public:
     void add_block(Block block);
     void remove_block(Block block);
 
+    void move_block(Block& block, int move_direction=0);
+    void rotate_block(Block& block, int rotate_direction=0);
+
     int clear_completed_lines();
 
 // private:
