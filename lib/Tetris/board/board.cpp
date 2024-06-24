@@ -34,18 +34,55 @@ void Board::draw(ST7789V lcd, bool force_draw) {
 }
 
 void Board::add_block(Block block) {
+    int8_t offset_x = 0;
+    int8_t offset_y = 0;
+
+    if (block.BLOCK_CODE == 0) {
+        switch (block.ROTATION) {
+            case 0:
+                offset_y = 1;
+                break;
+            case 1:
+                offset_x = 1;
+                break;
+            case 2:
+                offset_y = 1;
+                break;
+            case 3:
+                offset_x = 1;
+                break;
+            default:
+                break;
+        }
+    } else if (block.BLOCK_CODE == 3) {
+        switch (block.ROTATION) {
+            case 0:
+                offset_x = 1;
+                break;
+            case 2:
+                offset_x = 1;
+                offset_y = -1;
+                break;
+            case 3:
+                offset_x = 1;
+                break;
+            default:
+                break;
+        }
+    }
+
     int8_t bit_index = 7;
     for (int y = 0; y < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4); y++) {
         for (int x = 0; x < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F); x++) {
             if ((BLOCK_DATA[block.BLOCK_CODE].SHAPE >> bit_index) & 0x01) {
                 if (block.ROTATION == 0) {
-                    board_matrix[block.Y + y][block.X + x][1] = block.BLOCK_CODE;
+                    board_matrix[block.Y + y + offset_y][block.X + x + offset_x][1] = block.BLOCK_CODE;
                 } else if (block.ROTATION == 1) {
-                    board_matrix[block.Y + x][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y][1] = block.BLOCK_CODE; // mirrored on x, switched x with y
+                    board_matrix[block.Y + x + offset_y][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y + offset_x][1] = block.BLOCK_CODE; // mirrored on x, switched x with y
                 } else if (block.ROTATION == 2) {
-                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x][1] = block.BLOCK_CODE; // mirrored on x, y
+                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y + offset_y][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x + offset_x][1] = block.BLOCK_CODE; // mirrored on x, y
                 } else if (block.ROTATION == 3) {
-                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x][block.X + y][1] = block.BLOCK_CODE; // mirrored on y, switched x with y
+                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x + offset_y][block.X + y + offset_x][1] = block.BLOCK_CODE; // mirrored on y, switched x with y
                 }
             }
             bit_index--;
@@ -54,18 +91,55 @@ void Board::add_block(Block block) {
 }
 
 void Board::remove_block(Block block) {
+    int8_t offset_x = 0;
+    int8_t offset_y = 0;
+
+    if (block.BLOCK_CODE == 0) {
+        switch (block.ROTATION) {
+            case 0:
+                offset_y = 1;
+                break;
+            case 1:
+                offset_x = 1;
+                break;
+            case 2:
+                offset_y = 1;
+                break;
+            case 3:
+                offset_x = 1;
+                break;
+            default:
+                break;
+        }
+    } else if (block.BLOCK_CODE == 3) {
+        switch (block.ROTATION) {
+            case 0:
+                offset_x = 1;
+                break;
+            case 2:
+                offset_x = 1;
+                offset_y = -1;
+                break;
+            case 3:
+                offset_x = 1;
+                break;
+            default:
+                break;
+        }
+    }
+
     int8_t bit_index = 7;
     for (int y = 0; y < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4); y++) {
         for (int x = 0; x < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F); x++) {
             if ((BLOCK_DATA[block.BLOCK_CODE].SHAPE >> bit_index) & 0x01) {
                 if (block.ROTATION == 0) {
-                    board_matrix[block.Y + y][block.X + x][1] = 8;
+                    board_matrix[block.Y + y + offset_y][block.X + x + offset_x][1] = 8;
                 } else if (block.ROTATION == 1) {
-                    board_matrix[block.Y + x][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y][1] = 8; // mirrored on x, switched x with y
+                    board_matrix[block.Y + x + offset_y][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y + offset_x][1] = 8; // mirrored on x, switched x with y
                 } else if (block.ROTATION == 2) {
-                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x][1] = 8; // mirrored on x, y
+                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y + offset_y][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x + offset_x][1] = 8; // mirrored on x, y
                 } else if (block.ROTATION == 3) {
-                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x][block.X + y][1] = 8; // mirrored on y, switched x with y
+                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x + offset_y][block.X + y + offset_x][1] = 8; // mirrored on y, switched x with y
                 }
             }
             bit_index--;

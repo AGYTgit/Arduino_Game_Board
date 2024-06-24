@@ -8,15 +8,14 @@
 ST7789V lcd = ST7789V();
 Board board = Board();
 
-Block block = {0, 3, 0, 0};
+Block block = {0, 0, 0, 0};
 
 void setup() {
+  Serial.begin(9600);
   lcd.Init();
   lcd.fill();
 
-  for (int i = 0; i < 4; i++) {
-    board.add_block(block);
-  }
+  // board.add_block(block);
 
   board.draw(lcd);
 }

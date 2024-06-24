@@ -3,8 +3,8 @@
 
 struct Block {
     int8_t BLOCK_CODE;
-    uint16_t X;
-    uint16_t Y;
+    int16_t X;
+    int16_t Y;
     int8_t ROTATION;
 };
 
