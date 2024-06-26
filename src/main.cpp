@@ -8,20 +8,22 @@
 ST7789V lcd = ST7789V();
 Board board = Board();
 
-Block block = {0, 0, 0, 0};
+Block block = {5, 5, 5, 0};
+Block block2 = {5, 3, 10, 0};
 
 void setup() {
   Serial.begin(9600);
   lcd.Init();
   lcd.fill();
 
-  // board.add_block(block);
+  board.add_block(block);
+  board.add_block(block2);
 
   board.draw(lcd);
 }
 
 void loop() {
-  board.rotate_block(block, DIRECTION::CW);
+  board.move_block(block, DIRECTION::DOWN);
   board.draw(lcd);
   delay(500);
 }

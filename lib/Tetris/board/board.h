@@ -18,14 +18,16 @@ public:
     void move_block(Block& block, int move_direction=0);
     void rotate_block(Block& block, int rotate_direction=0);
 
-    int clear_completed_lines();
+    // int clear_completed_lines();
 
-// private:
+private:
     int board_pos_x;
     int board_pos_y;
     int8_t board_matrix[BOARD::HEIGHT][BOARD::WIDTH][BOARD::DEPTH]; // 2D array to store board state
 
-    void move_lines(int height);
+    bool check_collision(Block& block);
+
+    // void move_lines(int height);
 };
 
 #endif // board_h
