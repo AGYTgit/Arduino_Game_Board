@@ -18,13 +18,13 @@ namespace SHAPE {
 } // namespace SHAPE
 
 namespace DIRECTION {
-    const byte UP = 1;
-    const byte DOWN = 2;
-    const byte LEFT = 3;
-    const byte RIGHT = 4;
+    const byte UP = 0;
+    const byte DOWN = 1;
+    const byte LEFT = 2;
+    const byte RIGHT = 3;
 
-    const byte CW = 1;
-    const byte CCW = 2;
+    const byte CW = 0;
+    const byte CCW = 1;
 } // namespace MOVE
 
 #endif // BOARD_CONSTANTS_H

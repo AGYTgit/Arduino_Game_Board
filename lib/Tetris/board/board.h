@@ -15,8 +15,8 @@ public:
     void add_block(Block block);
     void remove_block(Block block);
 
-    void move_block(Block& block, int move_direction=0);
-    void rotate_block(Block& block, int rotate_direction=0);
+    void move_block(Block& block, byte move_direction=0);
+    void rotate_block(Block& block, byte rotate_direction=0);
 
     // int clear_completed_lines();
 
@@ -26,6 +26,8 @@ private:
     int8_t board_matrix[BOARD::HEIGHT][BOARD::WIDTH][BOARD::DEPTH]; // 2D array to store board state
 
     bool check_collision(Block& block);
+
+    void try_WKO(Block& block, byte rotate_direction);
 
     // void move_lines(int height);
 };
