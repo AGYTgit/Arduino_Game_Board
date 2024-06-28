@@ -17,6 +17,7 @@ Board::Board(int board_pos_x, int board_pos_y) {
     }
 }
 
+
 void Board::draw(ST7789V lcd, bool force_draw) {
     for (int i = 0; i < BOARD::HEIGHT; i++) {
         for (int j = 0; j < BOARD::WIDTH; j++) {
@@ -33,65 +34,82 @@ void Board::draw(ST7789V lcd, bool force_draw) {
     }
 }
 
+
 void Board::add_block(Block block) {
-    int8_t bit_index = 7;
-    for (int y = 0; y < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4); y++) {
-        for (int x = 0; x < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F); x++) {
-            if (((BLOCK_DATA[block.BLOCK_CODE].SHAPE >> bit_index) & 0x01) == 0) {
-                bit_index--;
-                continue;
-            }
-            
-            switch (block.ROTATION) {
-                case 0:
-                    board_matrix[block.Y + y][block.X + x][1] = block.BLOCK_CODE;
-                    break;
-                case 1:
-                    board_matrix[block.Y + x][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y][1] = block.BLOCK_CODE; // mirrored on x, switched x with y
-                    break;
-                case 2:
-                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - x][1] = block.BLOCK_CODE; // mirrored on x, y
-                    break;
-                case 3:
-                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - x][block.X + y][1] = block.BLOCK_CODE; // mirrored on y, switched x with y
-                    break;
-                default:
-                    break;
-            }
-            bit_index--;
-        }
-    }
+    this->update_block(block, 1); // add block
 }
 
 void Board::remove_block(Block block) {
-    int8_t bit_index = 7;
+    this->update_block(block, 0); // remove block
+}
+
+bool Board::check_collision(Block& block) {
+    return this->update_block(block, 2); // check for collisions, if there is return false if not return true
+}
+
+bool Board::update_block(Block block, byte update_method) {
+    byte board_y = 0;
+    byte board_x = 0;
+
+    int8_t bit_index = sizeof(BLOCK_DATA) / sizeof(BLOCK_DATA[0]) + 1;
     for (int y = 0; y < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4); y++) {
         for (int x = 0; x < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F); x++) {
-            if (((BLOCK_DATA[block.BLOCK_CODE].SHAPE >> bit_index) & 0x01) == 0) {
-                bit_index--;
+            if (((BLOCK_DATA[block.BLOCK_CODE].SHAPE >> --bit_index) & 0x01) == 0) {
                 continue;
             }
             
             switch (block.ROTATION) {
                 case 0:
-                    board_matrix[block.Y + y][block.X + x][1] = 8;
+                    board_y = block.Y + y;
+                    board_x = block.X + x;
                     break;
-                case 1:
-                    board_matrix[block.Y + x][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y][1] = 8; // mirrored on x, switched x with y
+                case 1: // mirrored on x, switched x with y
+                    board_y = block.Y + x;
+                    board_x = block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y;
                     break;
-                case 2:
-                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - x][1] = 8; // mirrored on x, y
+                case 2: // mirrored on x, y
+                    board_y = block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y;
+                    board_x = block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x;
                     break;
-                case 3:
-                    board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - x][block.X + y][1] = 8; // mirrored on y, switched x with y
+                case 3: // mirrored on y, switched x with y
+                    board_y = block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x;
+                    board_x = block.X + y ;
                     break;
                 default:
                     break;
             }
-            bit_index--;
+
+            if (block.BLOCK_CODE == 0 || block.BLOCK_CODE == 3) {
+                board_y += BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][1];
+                board_x += BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][0];
+            }
+
+            switch (update_method) {
+                case 0:
+                    board_matrix[board_y][board_x][1] = 8;
+                    break;
+                case 1:
+                    board_matrix[board_y][board_x][1] = block.BLOCK_CODE;
+                    break;
+                case 2:
+                    if (board_y < 0 || board_y >= BOARD::HEIGHT || board_x < 0 || board_x >= BOARD::WIDTH) {
+                        return false;
+                    } else if (board_matrix[board_y][board_x][1] != 8) {
+                        return false;
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
+
+    if (update_method == 2) {
+        return true;
+    }
+    return false;
 }
+
 
 void Board::move_block(Block& block, byte move_direction) {
     if (move_direction != DIRECTION::UP && move_direction != DIRECTION::DOWN && move_direction != DIRECTION::LEFT && move_direction != DIRECTION::RIGHT) {
@@ -140,87 +158,56 @@ void Board::rotate_block(Block& block, byte rotate_direction) {
     this->add_block(block);
 }
 
-bool Board::check_collision(Block& block) {
-    if (block.X + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][0] < 0 ||
-        block.Y + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][1] < 0 ||
-        block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][0] >= BOARD::WIDTH ||
-        block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][1] >= BOARD::HEIGHT) {
-        return false;
-    }
-
-    int8_t bit_index = 7;
-    for (int y = 0; y < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4); y++) {
-        for (int x = 0; x < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F); x++) {
-            if (((BLOCK_DATA[block.BLOCK_CODE].SHAPE >> bit_index) & 0x01) == 0) {
-                bit_index--;
-                continue;
-            }
-
-            switch (block.ROTATION) {
-                case 0:
-                    if (board_matrix[block.Y + y + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][1]][block.X + x + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][0]][1] != 8) {
-                        return false;
-                    }
-                    break;
-                case 1:
-                    if (board_matrix[block.Y + x + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][1]][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][0]][1] != 8) { // mirrored on x, switched x with y
-                        return false;
-                    }
-                    break;
-                case 2:
-                    if (board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][1]][block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - x + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][0]][1] != 8) { // mirrored on x, y
-                        return false;
-                    }
-                    break;
-                case 3:
-                    if (board_matrix[block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - x + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][1]][block.X + y + BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][0]][1] != 8) { // mirrored on y, switched x with y
-                        return false;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            bit_index--;
-        }
-    }
-    return true;
-}
 
 void Board::try_WKO(Block& block, byte rotate_direction) {
     byte rotate_offset = 0;
-
-    if (rotate_direction == DIRECTION::CW) {
-        rotate_offset = 1;
-    } else if (rotate_direction == DIRECTION::CCW) {
-        rotate_offset = -1;
-    }
+    switch (rotate_direction) {
+        case DIRECTION::CW:
+            rotate_offset = 1;
+            break;
+        case DIRECTION::CCW:
+            rotate_offset = -1;
+            break;
+        default:
+            break;
+}
 
     bool which_block = 0;
-
-    if (block.BLOCK_CODE == 1 || block.BLOCK_CODE == 2 || block.BLOCK_CODE == 4 || block.BLOCK_CODE == 5 || block.BLOCK_CODE == 6) {
-        which_block = 1;
-    } else if (block.BLOCK_CODE == 0) {
-        which_block = 0;
-    } else if (block.BLOCK_CODE == 3) {
-        return;
+    switch (block.BLOCK_CODE) {
+        case 1:
+        case 2:
+        case 4:
+        case 5:
+        case 6:
+            which_block = 1;
+            break;
+        case 0:
+            which_block = 0;
+            break;
+        case 3:
+            return;
+            break;
+        default:
+            break;
     }
-    
+
     for (int i = 0; i < 5; i++) {
         block.X += WKO[which_block][rotate_direction][block.ROTATION][i][0];
         block.Y += WKO[which_block][rotate_direction][block.ROTATION][i][1];
 
-        block.ROTATION = (block.ROTATION + rotate_offset + 4) % 4;
+        block.ROTATION = (block.ROTATION + rotate_offset) & 3;
 
         if (check_collision(block)) {
             break;
         }
 
-        block.ROTATION = (block.ROTATION - rotate_offset + 4) % 4;
+        block.ROTATION = (block.ROTATION - rotate_offset) & 3;
 
         block.X -= WKO[which_block][rotate_direction][block.ROTATION][i][0];
         block.Y -= WKO[which_block][rotate_direction][block.ROTATION][i][1];
     }
 }
+
 
 // void Board::move_lines(int height) {
 //     if (height > 0) {

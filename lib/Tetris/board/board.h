@@ -17,6 +17,7 @@ public:
 
     void move_block(Block& block, byte move_direction=0);
     void rotate_block(Block& block, byte rotate_direction=0);
+    bool check_collision(Block& block);
 
     // int clear_completed_lines();
 
@@ -25,7 +26,7 @@ private:
     int board_pos_y;
     int8_t board_matrix[BOARD::HEIGHT][BOARD::WIDTH][BOARD::DEPTH]; // 2D array to store board state
 
-    bool check_collision(Block& block);
+    bool update_block(Block block, byte update_method);
 
     void try_WKO(Block& block, byte rotate_direction);
 

@@ -9,7 +9,6 @@ ST7789V lcd = ST7789V();
 Board board = Board();
 
 Block block = {0, 0, 0, 0};
-Block block2 = {5, 3, 10, 0};
 
 void setup() {
   Serial.begin(9600);
@@ -17,27 +16,17 @@ void setup() {
   lcd.Init();
   lcd.fill();
 
-  board.add_block(block);
-  board.add_block(block2);
-
   board.draw(lcd);
 }
 
 void loop() {
-  // board.move_block(block, DIRECTION::DOWN);
-
-  // board.rotate_block(block, DIRECTION::CW);
-  // board.draw(lcd);
-  // delay(500);
-
   if (Serial.available()) {
     int input = Serial.parseInt();
-    Serial.println(input);
 
     if (input == 5) {
-      board.rotate_block(block, DIRECTION::CW);
-    } else if (input == 6) {
       board.rotate_block(block, DIRECTION::CCW);
+    } else if (input == 6) {
+      board.rotate_block(block, DIRECTION::CW);
     } else if (input == 1) {
       board.move_block(block, DIRECTION::UP);
     } else if (input == 2) {
@@ -46,6 +35,14 @@ void loop() {
       board.move_block(block, DIRECTION::LEFT);
     } else if (input == 4) {
       board.move_block(block, DIRECTION::RIGHT);
+    } else if (input == 0) {
+      while (!Serial.available());
+      int8_t input2 = Serial.parseInt();
+      block = {input2, 0, 0, 0};
+      board.add_block(block);
+      while (Serial.available()) {
+        Serial.read();
+      }
     }
 
     Serial.print(block.X);
