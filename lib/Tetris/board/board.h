@@ -14,12 +14,12 @@ public:
 
     void add_block(Block block);
     void remove_block(Block block);
+    bool check_collision(Block& block);
 
     void move_block(Block& block, byte move_direction=0);
     void rotate_block(Block& block, byte rotate_direction=0);
-    bool check_collision(Block& block);
 
-    // int clear_completed_lines();
+    int clear_completed_lines();
 
 private:
     int board_pos_x;
@@ -29,8 +29,6 @@ private:
     bool update_block(Block block, byte update_method);
 
     void try_WKO(Block& block, byte rotate_direction);
-
-    // void move_lines(int height);
 };
 
 #endif // board_h

@@ -209,37 +209,35 @@ void Board::try_WKO(Block& block, byte rotate_direction) {
 }
 
 
-// void Board::move_lines(int height) {
-//     if (height > 0) {
-//         for (int j = 0; j < BOARD::WIDTH; j++) {
-//             board_matrix[height][j][1] = board_matrix[height - 1][j][1];
-//         }
-//         for (int j = 0; j < BOARD::WIDTH; j++) {
-//             if (board_matrix[height][j][1] != 'B' && board_matrix[height][j][1] != 'D') {
-//                 move_lines(height - 1);
-//                 break;
-//             }
-//         }
-//     }
-// }
+int Board::clear_completed_lines() {
+    int cleared_lines = 0;
+    
+    for (int y = BOARD::HEIGHT - 1; y >= 0; y--) {
+        bool completed = true;
 
-// int Board::clear_completed_lines() {
-//     int amount = 0;
-//     for (int i = 0; i < BOARD::HEIGHT; i++) {
-//         bool is_completed = true;
-//         for (int j = 0; j < BOARD::WIDTH; j++) {
-//             if (board_matrix[i][j][1] == 'B' || board_matrix[i][j][1] == 'D') {
-//                 is_completed = false;
-//                 break;
-//             }
-//         }
-//         if (is_completed) {
-//             for (int j = 0; j < BOARD::WIDTH; j++) {
-//                 board_matrix[i][j][1] = 'B';
-//             }
-//             move_lines(i);
-//             amount++;
-//         }
-//     }
-//     return amount;
-// }
+        for (int x = 0; x < BOARD::WIDTH; x++) {
+            if (this->board_matrix[y][x][1] == 8) {
+                completed = false;
+                break;
+            }
+        }
+
+        if (!completed) {
+            continue;
+        }
+
+        for (int y2 = y; y2 > 0; y2--) {
+            for (int x2 = 0; x2 < BOARD::WIDTH; x2++) {
+                this->board_matrix[y2][x2][1] = this->board_matrix[y2 - 1][x2][1];
+            }
+        }
+
+        for (int x3 = 0; x3 < BOARD::WIDTH; x3++) {
+            this->board_matrix[0][x3][1] = 8;
+        }
+
+        cleared_lines++;
+        y++;
+    }
+    return cleared_lines;
+}

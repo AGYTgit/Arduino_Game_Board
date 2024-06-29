@@ -11,7 +11,7 @@ Board board = Board();
 Block block = {0, 0, 0, 0};
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   lcd.Init();
   lcd.fill();
@@ -40,10 +40,11 @@ void loop() {
       int8_t input2 = Serial.parseInt();
       block = {input2, 0, 0, 0};
       board.add_block(block);
-      while (Serial.available()) {
-        Serial.read();
-      }
+    } else if (input == 7) {
+      Serial.println(board.clear_completed_lines());
     }
+
+
 
     Serial.print(block.X);
     Serial.print(' ');
