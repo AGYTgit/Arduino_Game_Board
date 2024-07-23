@@ -1,10 +1,12 @@
 #ifndef board_h
 #define board_h
 
+#include <Arduino.h>
+
 #include <ST7789V.h>
 
-#include <tetris_settings.h>
-#include <block_data/block_data.h>
+#include "settings-data/tetris_settings.h"
+#include "settings-data/block_data.h"
 
 class Board {
 public:
@@ -16,8 +18,8 @@ public:
     void remove_block(Block block);
     bool check_collision(Block& block);
 
-    void move_block(Block& block, byte move_direction=0);
-    void rotate_block(Block& block, byte rotate_direction=0);
+    void move_block(Block& block, int8_t move_direction=0);
+    void rotate_block(Block& block, int8_t rotate_direction=0);
 
     int clear_completed_lines();
 
@@ -26,9 +28,9 @@ private:
     int board_pos_y;
     int8_t board_matrix[BOARD::HEIGHT][BOARD::WIDTH][BOARD::DEPTH]; // 2D array to store board state
 
-    bool update_block(Block block, byte update_method);
+    bool update_block(Block block, int8_t update_method);
 
-    void try_WKO(Block& block, byte rotate_direction);
+    void try_WKO(Block& block, int8_t rotate_direction);
 };
 
 #endif // board_h

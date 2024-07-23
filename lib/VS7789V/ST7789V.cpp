@@ -1,10 +1,4 @@
-#include <ST7789V.h>
-#include <pin_magic.h>
-#include <dimensions.h>
-
-ST7789V::ST7789V() {
-    setup_pins();
-}
+#include "ST7789V.h"
 
 void ST7789V::setup_pins() {
     DDRD = DDRD | B11111100;

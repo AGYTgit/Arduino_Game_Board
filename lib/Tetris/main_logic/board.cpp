@@ -1,9 +1,5 @@
 #include "board.h"
 
-#include <ST7789V.h>
-
-#include <block_data/block_data.h>
-
 Board::Board(int board_pos_x, int board_pos_y) {
     this->board_pos_x = board_pos_x;
     this->board_pos_y = board_pos_y;
@@ -47,9 +43,9 @@ bool Board::check_collision(Block& block) {
     return this->update_block(block, 2); // check for collisions, if there is return false if not return true
 }
 
-bool Board::update_block(Block block, byte update_method) {
-    byte board_y = 0;
-    byte board_x = 0;
+bool Board::update_block(Block block, int8_t update_method) {
+    int8_t board_y = 0;
+    int8_t board_x = 0;
 
     int8_t bit_index = sizeof(BLOCK_DATA) / sizeof(BLOCK_DATA[0]) + 1;
     for (int y = 0; y < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4); y++) {
@@ -111,7 +107,7 @@ bool Board::update_block(Block block, byte update_method) {
 }
 
 
-void Board::move_block(Block& block, byte move_direction) {
+void Board::move_block(Block& block, int8_t move_direction) {
     if (move_direction != DIRECTION::UP && move_direction != DIRECTION::DOWN && move_direction != DIRECTION::LEFT && move_direction != DIRECTION::RIGHT) {
         return;
     }
@@ -148,7 +144,7 @@ void Board::move_block(Block& block, byte move_direction) {
     this->add_block(block);
 }
 
-void Board::rotate_block(Block& block, byte rotate_direction) {
+void Board::rotate_block(Block& block, int8_t rotate_direction) {
     if (rotate_direction != DIRECTION::CW && rotate_direction != DIRECTION::CCW) {
         return;
     }
@@ -159,8 +155,8 @@ void Board::rotate_block(Block& block, byte rotate_direction) {
 }
 
 
-void Board::try_WKO(Block& block, byte rotate_direction) {
-    byte rotate_offset = 0;
+void Board::try_WKO(Block& block, int8_t rotate_direction) {
+    int8_t rotate_offset = 0;
     switch (rotate_direction) {
         case DIRECTION::CW:
             rotate_offset = 1;
