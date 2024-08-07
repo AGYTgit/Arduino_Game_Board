@@ -1,8 +1,7 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "text/text.h"
-#include "button/button.h"
 #include "menu/menu.h"
+#include "button/button.h"
 
-#endif  // GUI_H
+#endif // GUI_H
