@@ -14,7 +14,7 @@ private:
   bool** button_pressed;
 
 public:
-  Button_Grid(uint8_t input_pin_offset, uint8_t output_pin_offset, uint8_t grid_width, uint8_t grid_heigh);
+  Button_Grid(uint8_t _input_pin_offset, uint8_t _output_pin_offset, uint8_t _grid_width, uint8_t _grid_heigh);
   ~Button_Grid();
 
   void init();

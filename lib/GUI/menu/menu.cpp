@@ -1,7 +1,7 @@
 #include "menu.h"
 
 Menu::Menu(ST7789V& _lcd, uint8_t _button_grid_height, uint8_t _button_grid_width, uint16_t _bg_color) :
-    lcd(_lcd), button_grid_height(_button_grid_height), button_grid_width(_button_grid_width), bg_color(_bg_color), highlight_index_y(0), highlight_index_x(0) {}
+    lcd(_lcd), button_grid_height(_button_grid_height), button_grid_width(_button_grid_width), bg_color(_bg_color), position_y(0), position_x(0) {}
 
 Menu::~Menu() {
     delete[] this->buttons;
@@ -38,25 +38,31 @@ void Menu::draw() {
 }
 
 void Menu::move(uint8_t direction) {
-    uint8_t old_highlight_index_y = this->highlight_index_y;
-    uint8_t old_highlight_index_x = this->highlight_index_x;
+    uint8_t old_position_y = this->position_y;
+    uint8_t old_position_x = this->position_x;
 
     if (direction == 0) {
-        this->highlight_index_y = (this->highlight_index_y + 1) % this->button_grid_height;
+        this->position_y = (this->position_y + 1) % this->button_grid_height;
     } else if (direction == 1) {
-        this->highlight_index_y = (this->highlight_index_y - 1 + this->button_grid_height) % this->button_grid_height;
+        this->position_y = (this->position_y - 1 + this->button_grid_height) % this->button_grid_height;
     } else if (direction == 2) {
-        this->highlight_index_x = (this->highlight_index_x + 1) % this->button_grid_width;
+        this->position_x = (this->position_x + 1) % this->button_grid_width;
     } else if (direction == 3) {
-        this->highlight_index_x = (this->highlight_index_x - 1 + this->button_grid_width) % this->button_grid_width;
+        this->position_x = (this->position_x - 1 + this->button_grid_width) % this->button_grid_width;
     }
 
-    if (this->button_active[this->highlight_index_y][this->highlight_index_x]) {
-        this->buttons[old_highlight_index_y][old_highlight_index_x].unhighlight(this->lcd);
-        this->buttons[this->highlight_index_y][this->highlight_index_x].highlight(this->lcd);
+    if (this->button_active[this->position_y][this->position_x]) {
+        this->buttons[old_position_y][old_position_x].unhighlight(this->lcd);
+        this->buttons[this->position_y][this->position_x].highlight(this->lcd);
         return;
     }
 
-    this->highlight_index_x = old_highlight_index_x;
-    this->highlight_index_y = old_highlight_index_y;
+    this->position_x = old_position_x;
+    this->position_y = old_position_y;
+}
+
+void Menu::get_position(uint8_t*& position) {
+    position = new uint8_t[2];
+    position[0] = this->position_y;
+    position[1] = this->position_x;
 }

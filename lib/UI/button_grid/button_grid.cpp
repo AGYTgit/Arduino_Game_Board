@@ -10,12 +10,17 @@ Button_Grid::~Button_Grid() {
 void Button_Grid::init() {
     this->button_pressed = new bool*[this->grid_height];
     for (uint8_t i = 0; i < this->grid_height; i++) {
-        pinMode(i + this->input_pin_offset, INPUT_PULLUP);
-        pinMode(i + this->output_pin_offset, OUTPUT);
         this->button_pressed[i] = new bool[this->grid_width];
         for (uint8_t j = 0; j < this->grid_width; j++) {
             this->button_pressed[i][j] = false;
         }
+    }
+
+    for (uint8_t i = 0; i < this->grid_width; i++) {
+        pinMode(i + this->input_pin_offset, INPUT_PULLUP);
+    }
+    for (uint8_t i = 0; i < this->grid_height; i++) {
+        pinMode(i + this->output_pin_offset, OUTPUT);
     }
 
     for (uint8_t i = 0; i < this->grid_height * this->grid_width; i++) {
