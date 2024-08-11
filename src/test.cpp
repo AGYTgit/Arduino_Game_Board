@@ -6,57 +6,77 @@
 
 ST7789V lcd = ST7789V();
 
-Menu main_menu = Menu(lcd, 3, 2, lcd.rgb(0,0,0));
+Button_Grid button_grid = Button_Grid(8, 10, 0x23);
 
-Button_Grid button_grid = Button_Grid(8, 10, 2, 3);
+Menu main_menu = Menu(lcd, 0x23, lcd.rgb(0,0,0));
 
+void load_main_menu() {
+  if (1) { // setup
+    main_menu.init();
+
+    main_menu.add_button(0, 0, 70, 50, 100, 50, lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
+    main_menu.add_button(0, 1, 70, 120, 100, 50, lcd.rgb(0,255,0), 2, lcd.rgb(255,255,255));
+    main_menu.add_button(0, 2, 70, 190, 100, 50, lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
+    main_menu.add_button(1, 1, 190, 120, 20, 50, lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
+
+    main_menu.draw();
+  }
+
+  if (1) { // loop
+    while (true) {
+      uint8_t ui_button_coordinations = button_grid.scan();
+
+      if (ui_button_coordinations == 0xFF) {
+        continue;
+      }
+
+      uint16_t ui_button_code = (ui_button_coordinations >> 4) + ((ui_button_coordinations & 0x0F) * 2);
+      // Serial.println(ui_button_code);
+
+      if (ui_button_code == 4) {
+        uint8_t gui_button_coordinations = main_menu.get_position();
+
+        if ((gui_button_coordinations >> 4) == 0 && (gui_button_coordinations & 0x0F) == 0) {
+          lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,0));
+        } else if ((gui_button_coordinations >> 4) == 0 && (gui_button_coordinations & 0x0F) == 1) {
+          lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,255,0));
+        } else if ((gui_button_coordinations >> 4) == 0 && (gui_button_coordinations & 0x0F) == 2) {
+          lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
+        } else if ((gui_button_coordinations >> 4) == 1 && (gui_button_coordinations & 0x0F) == 1) {
+          lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,255));
+        }
+
+      } else if (ui_button_code >= 0 && ui_button_code <= 3) {
+        if (ui_button_code == 0) {
+          main_menu.move(1);
+        } else if (ui_button_code == 1) {
+          main_menu.move(0);
+        } else if (ui_button_code == 2) {
+          main_menu.move(3);
+        } else if (ui_button_code == 3) {
+          main_menu.move(2);
+        }
+      }
+    }
+  }
+  
+  if (1) { // end
+    main_menu.~Menu();
+  }
+}
 
 void setup() {
   // Serial.begin(115200);
+  // Serial.println(1);
 
   lcd.Init();
   lcd.fill();
   
-  main_menu.init();
-
   button_grid.init();
 
-
-  main_menu.add_button(0, 0, 70, 50, 100, 50, lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
-  main_menu.add_button(1, 0, 70, 120, 100, 50, lcd.rgb(0,255,0), 2, lcd.rgb(255,255,255));
-  main_menu.add_button(2, 0, 70, 190, 100, 50, lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
-  main_menu.add_button(1, 1, 190, 120, 20, 50, lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
-  main_menu.add_button(1, 1, 190, 120, 20, 50, lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
-
-  main_menu.draw();
+  load_main_menu();
 }
 
-uint8_t* button_coordinations = nullptr;
-uint8_t* position = nullptr;
-
 void loop() {
-  if (button_grid.scan(button_coordinations)) {
-    uint8_t button_code = button_coordinations[0] * 2 + button_coordinations[1];
-
-    if (button_code == 4) {
-      main_menu.get_position(position);
-
-      if (position[0] == 0 && position[1] == 0) {
-        lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,0));
-      } else if (position[0] == 1 && position[1] == 0) {
-        lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,255,0));
-      } else if (position[0] == 2 && position[1] == 0) {
-        lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
-      } else if (position[0] == 1 && position[1] == 1) {
-        lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,255));
-      }
-
-      delete[] position;
-
-    } else if (button_code >= 0 && button_code <= 3) {
-      main_menu.move(button_code);
-    }
-
-    delete[] button_coordinations;
-  }
+  
 }

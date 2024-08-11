@@ -1,68 +1,76 @@
 #include "menu.h"
 
-Menu::Menu(ST7789V& _lcd, uint8_t _button_grid_height, uint8_t _button_grid_width, uint16_t _bg_color) :
-    lcd(_lcd), button_grid_height(_button_grid_height), button_grid_width(_button_grid_width), bg_color(_bg_color), position_y(0), position_x(0) {}
+Menu::Menu(ST7789V& _lcd, uint8_t _button_grid_dimensions, uint16_t _bg_color) :
+    lcd(_lcd), button_grid_dimensions(_button_grid_dimensions), bg_color(_bg_color), selected_position(0) {}
 
 Menu::~Menu() {
+    for (uint8_t i = 0; i < (this->button_grid_dimensions >> 4); i++) {
+        delete[] this->buttons[i];
+        delete[] this->button_active[i];
+    }
     delete[] this->buttons;
     delete[] this->button_active;
 }
 
 void Menu::init() {
-    this->buttons = new Button*[this->button_grid_height];
-    this->button_active = new bool*[this->button_grid_height];
-    for (uint8_t i = 0; i < this->button_grid_height; i++) {
-        this->buttons[i] = new Button[this->button_grid_width];
-        this->button_active[i] = new bool[this->button_grid_width];
-        for (uint8_t j = 0; j < this->button_grid_width; j++) {
+    this->buttons = new Button*[this->button_grid_dimensions >> 4];
+    this->button_active = new bool*[this->button_grid_dimensions >> 4];
+    for (uint8_t i = 0; i < (this->button_grid_dimensions >> 4); i++) {
+        this->buttons[i] = new Button[this->button_grid_dimensions & 0x0F];
+        this->button_active[i] = new bool[this->button_grid_dimensions & 0x0F];
+        for (uint8_t j = 0; j < (this->button_grid_dimensions & 0x0F); j++) {
             this->button_active[i][j] = false;
         }
     }
 }
 
-void Menu::add_button(uint8_t button_grid_pos_y, uint8_t button_grid_pos_x, uint16_t pos_x, uint16_t pos_y, uint16_t width, uint16_t height, uint16_t color, uint8_t border_thickness, uint16_t highlight_color) {
-    if (button_grid_pos_y < this->button_grid_height && button_grid_pos_x < this->button_grid_width) {
-        this->buttons[button_grid_pos_y][button_grid_pos_x] = Button(pos_x, pos_y, width, height, color, border_thickness, highlight_color);
-        this->button_active[button_grid_pos_y][button_grid_pos_x] = true;
+void Menu::add_button(uint8_t button_grid_pos_x, uint8_t button_grid_pos_y, uint16_t pos_x, uint16_t pos_y, uint16_t width, uint16_t height, uint16_t color, uint8_t border_thickness, uint16_t highlight_color) {
+    if (button_grid_pos_x < (this->button_grid_dimensions >> 4) && button_grid_pos_y < (this->button_grid_dimensions & 0x0F)) {
+        this->buttons[button_grid_pos_x][button_grid_pos_y] = Button(pos_x, pos_y, width, height, color, border_thickness, highlight_color);
+        this->button_active[button_grid_pos_x][button_grid_pos_y] = true;
     }
 }
 
 void Menu::draw() {
     this->lcd.fill(bg_color);
-    for (uint8_t i = 0; i < this->button_grid_height; i++) {
-        for (uint8_t j = 0; j < this->button_grid_width; j++) {
-            this->buttons[i][j].draw(this->lcd);
+    for (uint8_t i = 0; i < (this->button_grid_dimensions >> 4); i++) {
+        for (uint8_t j = 0; j < (this->button_grid_dimensions & 0x0F); j++) {
+            if (this->button_active[i][j]) {
+                this->buttons[i][j].draw(this->lcd);
+            }
         }
     }
     this->move(-1);
 }
 
 void Menu::move(uint8_t direction) {
-    uint8_t old_position_y = this->position_y;
-    uint8_t old_position_x = this->position_x;
+    uint8_t row = this->selected_position >> 4;
+    uint8_t col = this->selected_position & 0x0F;
+    uint8_t old_row = row;
+    uint8_t old_col = col;
 
-    if (direction == 0) {
-        this->position_y = (this->position_y + 1) % this->button_grid_height;
-    } else if (direction == 1) {
-        this->position_y = (this->position_y - 1 + this->button_grid_height) % this->button_grid_height;
-    } else if (direction == 2) {
-        this->position_x = (this->position_x + 1) % this->button_grid_width;
-    } else if (direction == 3) {
-        this->position_x = (this->position_x - 1 + this->button_grid_width) % this->button_grid_width;
+    if (direction == 0) { // Move up
+        col = (col - 1 + (this->button_grid_dimensions & 0x0F)) % (this->button_grid_dimensions & 0x0F);
+    } else if (direction == 1) { // Move down
+        col = (col + 1) % (this->button_grid_dimensions & 0x0F);
+    } else if (direction == 2) { // Move left
+        row = (row - 1 + (this->button_grid_dimensions >> 4)) % (this->button_grid_dimensions >> 4);
+    } else if (direction == 3) { // Move right
+        row = (row + 1) % (this->button_grid_dimensions >> 4);
     }
 
-    if (this->button_active[this->position_y][this->position_x]) {
-        this->buttons[old_position_y][old_position_x].unhighlight(this->lcd);
-        this->buttons[this->position_y][this->position_x].highlight(this->lcd);
+    if (!this->button_active[row][col]) {
+        this->selected_position = (old_row << 4) | old_col;
         return;
     }
 
-    this->position_x = old_position_x;
-    this->position_y = old_position_y;
+    this->buttons[old_row][old_col].unhighlight(this->lcd);
+    this->buttons[row][col].highlight(this->lcd);
+
+    this->selected_position = (row << 4) | col;
 }
 
-void Menu::get_position(uint8_t*& position) {
-    position = new uint8_t[2];
-    position[0] = this->position_y;
-    position[1] = this->position_x;
+
+uint8_t Menu::get_position() {
+    return this->selected_position;
 }
