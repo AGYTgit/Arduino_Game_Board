@@ -6,13 +6,17 @@ Button::Button(uint16_t _pos_x, uint16_t _pos_y, uint16_t _width, uint16_t _heig
   pos_x(_pos_x), pos_y(_pos_y), width(_width), height(_height), color(_color), border_thickness(_border_thickness), highlight_color(_highlight_color) {}
 
 void Button::draw(ST7789V lcd) {
-  lcd.draw_rect(pos_x, pos_y, width, height, color);
+  lcd.draw_rect(this->pos_x, this->pos_y, this->width, this->height, this->color);
+}
+
+void Button::draw(ST7789V lcd, uint16_t color) {
+  lcd.draw_rect(this->pos_x, this->pos_y, this->width, this->height, color);
 }
 
 void Button::highlight(ST7789V lcd) {
-  lcd.draw_frame(pos_x, pos_y, width, height, border_thickness, highlight_color);
+  lcd.draw_frame(this->pos_x, this->pos_y, this->width, this->height, this->border_thickness, this->highlight_color);
 }
 
 void Button::unhighlight(ST7789V lcd) {
-  lcd.draw_frame(pos_x, pos_y, width, height, border_thickness, color);
+  lcd.draw_frame(this->pos_x, this->pos_y, this->width, this->height, this->border_thickness, this->color);
 }

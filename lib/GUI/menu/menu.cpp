@@ -32,7 +32,7 @@ void Menu::add_button(uint8_t button_grid_pos_x, uint8_t button_grid_pos_y, uint
 }
 
 void Menu::draw() {
-    this->lcd.fill(bg_color);
+    // this->lcd.fill(this->bg_color);
     for (uint8_t i = 0; i < (this->button_grid_dimensions >> 4); i++) {
         for (uint8_t j = 0; j < (this->button_grid_dimensions & 0x0F); j++) {
             if (this->button_active[i][j]) {
@@ -41,6 +41,16 @@ void Menu::draw() {
         }
     }
     this->move(-1);
+}
+
+void Menu::undraw() {
+    for (uint8_t i = 0; i < (this->button_grid_dimensions >> 4); i++) {
+        for (uint8_t j = 0; j < (this->button_grid_dimensions & 0x0F); j++) {
+            if (this->button_active[i][j]) {
+                this->buttons[i][j].draw(this->lcd, this->bg_color);
+            }
+        }
+    }
 }
 
 void Menu::move(uint8_t direction) {
