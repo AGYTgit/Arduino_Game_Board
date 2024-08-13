@@ -18,8 +18,11 @@ public:
     void remove_block(Block block);
     bool check_collision(Block& block);
 
-    void move_block(Block& block, int8_t move_direction=0);
-    void rotate_block(Block& block, int8_t rotate_direction=0);
+    bool move_block(Block& block, int8_t move_direction=0);
+    bool rotate_block(Block& block, int8_t rotate_direction=0);
+
+    void drop(Block& block);
+
 
     int clear_completed_lines();
 
@@ -30,7 +33,7 @@ private:
 
     bool update_block(Block block, int8_t update_method);
 
-    void try_WKO(Block& block, int8_t rotate_direction);
+    bool try_WKO(Block& block, int8_t rotate_direction);
 };
 
 #endif // board_h

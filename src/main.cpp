@@ -110,7 +110,19 @@ uint8_t tetris_game() {
   Board board = Board();
   Block block = {0, 0, 0, 0};
 
+  uint16_t time_to_drop = 1000;
+  uint16_t time_to_move = 3000;
+
+  unsigned long time_of_last_drop = 0;
+  unsigned long time_of_last_move = 0;
+
   if (1) { // setup
+    board.draw(lcd);
+
+    block = {(int8_t)(analogRead(A5) % 7), 0, 0, 0};
+    board.add_block(block);
+    time_of_last_drop = millis();
+    time_of_last_move = millis();
     board.draw(lcd);
   }
 
@@ -120,42 +132,66 @@ uint8_t tetris_game() {
         case 0xFF:
           break;
         case 0x10:
-          board.move_block(block, DIRECTION::LEFT);
-          board.draw(lcd);
+          if (board.move_block(block, DIRECTION::LEFT)) {
+            board.draw(lcd);
+            time_of_last_move = millis();
+          }
           break;
         case 0x11:
-          board.move_block(block, DIRECTION::DOWN);
-          board.draw(lcd);
+          if (board.move_block(block, DIRECTION::DOWN)) {
+            board.draw(lcd);
+            time_of_last_move = millis();
+          }
           break;
         case 0x12:
-          board.move_block(block, DIRECTION::UP);
-          board.draw(lcd);
+          board.drop(block);
+          time_of_last_move = millis() + time_to_move;
           break;
         case 0x13:
-          board.move_block(block, DIRECTION::RIGHT);
-          board.draw(lcd);
+          if (board.move_block(block, DIRECTION::RIGHT)) {
+            board.draw(lcd);
+            time_of_last_move = millis();
+          }
           break;
         case 0x00:
-          board.rotate_block(block, DIRECTION::CCW);
-          board.draw(lcd);
+          if (board.rotate_block(block, DIRECTION::CCW)) {
+            board.draw(lcd);
+            time_of_last_move = millis();
+          }
           break;
         case 0x03:
-          board.rotate_block(block, DIRECTION::CW);
-          board.draw(lcd);
+          if (board.rotate_block(block, DIRECTION::CW)) {
+            board.draw(lcd);
+            time_of_last_move = millis();
+          }
           break;
         case 0x01:
-          board.clear_completed_lines();
-          board.draw(lcd);
-          block = {(int8_t)(analogRead(A5) % 7), 0, 0, 0};
-          board.add_block(block);
-          board.draw(lcd);
+          // hold block
           break;
         case 0x02:
           return 0;
           break;
       }
+
+      if (millis() - time_of_last_drop > time_to_drop) {
+        if (board.move_block(block, DIRECTION::DOWN)) {
+          board.draw(lcd);
+          time_of_last_drop = millis();
+          time_of_last_move = millis();
+        }
+
+        if (millis() - time_of_last_move > time_to_move) {
+          board.clear_completed_lines();
+          board.draw(lcd);
+          block = {(int8_t)(analogRead(A5) % 7), 0, 0, 0};
+          board.add_block(block);
+          board.draw(lcd);
+          time_of_last_drop = millis();
+          time_of_last_move = millis();
+        }
+      }
     }
-  }
+  }  
 }
 
 uint8_t minesweeper_menu() {

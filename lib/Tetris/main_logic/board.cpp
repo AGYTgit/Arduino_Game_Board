@@ -107,10 +107,12 @@ bool Board::update_block(Block block, int8_t update_method) {
 }
 
 
-void Board::move_block(Block& block, int8_t move_direction) {
+bool Board::move_block(Block& block, int8_t move_direction) {
     if (move_direction != DIRECTION::UP && move_direction != DIRECTION::DOWN && move_direction != DIRECTION::LEFT && move_direction != DIRECTION::RIGHT) {
-        return;
+        return false;
     }
+
+    bool state = true;
 
     this->remove_block(block);
     switch (move_direction) {
@@ -118,44 +120,56 @@ void Board::move_block(Block& block, int8_t move_direction) {
             block.Y--;
             if (!check_collision(block)) {
                 block.Y++;
+                state = false;
             }
             break;
         case DIRECTION::DOWN:
             block.Y++;
             if (!check_collision(block)) {
                 block.Y--;
+                state = false;
             }
             break;
         case DIRECTION::LEFT:
             block.X--;
             if (!check_collision(block)) {
                 block.X++;
+                state = false;
             }
             break;
         case DIRECTION::RIGHT:
             block.X++;
             if (!check_collision(block)) {
                 block.X--;
+                state = false;
             }
-            break;
-        default:
             break;
     }
     this->add_block(block);
+
+    return state;
 }
 
-void Board::rotate_block(Block& block, int8_t rotate_direction) {
+bool Board::rotate_block(Block& block, int8_t rotate_direction) {
     if (rotate_direction != DIRECTION::CW && rotate_direction != DIRECTION::CCW) {
-        return;
+        return false;
     }
 
     this->remove_block(block);
-    try_WKO(block, rotate_direction);
+    bool state = try_WKO(block, rotate_direction);
     this->add_block(block);
+
+    return state;
+}
+
+void Board::drop(Block& block) {
+    if (this->move_block(block, DIRECTION::DOWN)) {
+        this->drop(block);
+    }
 }
 
 
-void Board::try_WKO(Block& block, int8_t rotate_direction) {
+bool Board::try_WKO(Block& block, int8_t rotate_direction) {
     int8_t rotate_offset = 0;
     switch (rotate_direction) {
         case DIRECTION::CW:
@@ -164,16 +178,10 @@ void Board::try_WKO(Block& block, int8_t rotate_direction) {
         case DIRECTION::CCW:
             rotate_offset = -1;
             break;
-        default:
-            break;
 }
 
     bool which_block = 0;
     switch (block.BLOCK_CODE) {
-        case 1:
-        case 2:
-        case 4:
-        case 5:
         case 6:
             which_block = 1;
             break;
@@ -181,10 +189,7 @@ void Board::try_WKO(Block& block, int8_t rotate_direction) {
             which_block = 0;
             break;
         case 3:
-            return;
-            break;
-        default:
-            break;
+            return false;
     }
 
     for (int i = 0; i < 5; i++) {
@@ -194,7 +199,7 @@ void Board::try_WKO(Block& block, int8_t rotate_direction) {
         block.ROTATION = (block.ROTATION + rotate_offset) & 3;
 
         if (check_collision(block)) {
-            break;
+            return true;
         }
 
         block.ROTATION = (block.ROTATION - rotate_offset) & 3;
@@ -202,6 +207,8 @@ void Board::try_WKO(Block& block, int8_t rotate_direction) {
         block.X -= WKO[which_block][rotate_direction][block.ROTATION][i][0];
         block.Y -= WKO[which_block][rotate_direction][block.ROTATION][i][1];
     }
+
+    return false;
 }
 
 

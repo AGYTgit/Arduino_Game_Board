@@ -2,7 +2,7 @@
 // #include <ui.h>
 
 
-// Button_Grid button_grid = Button_Grid(8, 10, 0x23);
+// Button_Grid button_grid = Button_Grid(8, 10, 0x24);
 
 
 // void load_main_menu() {
@@ -18,11 +18,7 @@
 //         continue;
 //       }
 
-//       Serial.print(ui_button_coordinations >> 4);
-//       Serial.print(' ');
-//       Serial.print(ui_button_coordinations & 0x0F);
-//       Serial.print(' ');
-//       Serial.println((ui_button_coordinations >> 4) + ((ui_button_coordinations & 0x0F) * 2));
+//       Serial.println(ui_button_coordinations, HEX);
 //     }
 //   }
   
