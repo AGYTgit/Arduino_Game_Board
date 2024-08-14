@@ -108,7 +108,7 @@ uint8_t tetris_menu() {
 
 uint8_t tetris_game() {
   Board board = Board();
-  Block block = {0, 0, 0, 0};
+  Block block;
 
   uint16_t time_to_drop = 1000;
   uint16_t time_to_move = 3000;
@@ -119,7 +119,9 @@ uint8_t tetris_game() {
   if (1) { // setup
     board.draw(lcd);
 
-    block = {(int8_t)(analogRead(A5) % 7), 0, 0, 0};
+    int8_t block_code = analogRead(A5) % 7;
+    
+    block = {block_code, (int16_t)(floor((BOARD::WIDTH - (BLOCK_DATA->DIMENSIONS >> 4)) / 2) - 1), 0, 0};
     board.add_block(block);
     time_of_last_drop = millis();
     time_of_last_move = millis();
@@ -145,6 +147,7 @@ uint8_t tetris_game() {
           break;
         case 0x12:
           board.drop(block);
+          board.draw(lcd);
           time_of_last_move = millis() + time_to_move;
           break;
         case 0x13:
@@ -169,7 +172,7 @@ uint8_t tetris_game() {
           // hold block
           break;
         case 0x02:
-          return 0;
+          return 1;
           break;
       }
 
@@ -181,9 +184,16 @@ uint8_t tetris_game() {
         }
 
         if (millis() - time_of_last_move > time_to_move) {
+          if (block.Y <= 0) {
+            return 1;
+          }
+
           board.clear_completed_lines();
           board.draw(lcd);
-          block = {(int8_t)(analogRead(A5) % 7), 0, 0, 0};
+
+          int8_t block_code = analogRead(A5) % 7;
+    
+          block = {block_code, (int16_t)(floor((BOARD::WIDTH - (BLOCK_DATA->DIMENSIONS >> 4)) / 2) - 1), 0, 0};
           board.add_block(block);
           board.draw(lcd);
           time_of_last_drop = millis();

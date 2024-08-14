@@ -12,7 +12,7 @@ class Board {
 public:
     Board(int board_pos_x=0, int board_pos_y=0);
 
-    void draw(ST7789V lcd, bool force_draw = false);
+    void draw(ST7789V lcd, bool force_draw=false);
 
     void add_block(Block block);
     void remove_block(Block block);
@@ -23,8 +23,7 @@ public:
 
     void drop(Block& block);
 
-
-    int clear_completed_lines();
+    uint8_t clear_completed_lines();
 
 private:
     int board_pos_x;

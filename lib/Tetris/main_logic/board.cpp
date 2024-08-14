@@ -15,8 +15,8 @@ Board::Board(int board_pos_x, int board_pos_y) {
 
 
 void Board::draw(ST7789V lcd, bool force_draw) {
-    for (int i = 0; i < BOARD::HEIGHT; i++) {
-        for (int j = 0; j < BOARD::WIDTH; j++) {
+    for (uint8_t i = 0; i < BOARD::HEIGHT; i++) {
+        for (uint8_t j = 0; j < BOARD::WIDTH; j++) {
             if (board_matrix[i][j][0] != board_matrix[i][j][1] || force_draw) {
                 if (board_matrix[i][j][1] == 8) {
                     lcd.draw_rect(board_pos_x + j * BOARD::GRID_SIZE, board_pos_y + i * BOARD::GRID_SIZE, BOARD::GRID_SIZE, BOARD::GRID_SIZE, lcd.rgb(0,0,0));
@@ -212,7 +212,7 @@ bool Board::try_WKO(Block& block, int8_t rotate_direction) {
 }
 
 
-int Board::clear_completed_lines() {
+uint8_t Board::clear_completed_lines() {
     int cleared_lines = 0;
     
     for (int y = BOARD::HEIGHT - 1; y >= 0; y--) {
