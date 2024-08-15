@@ -13,7 +13,7 @@ Button_Grid button_grid = Button_Grid(8, 10, 0x24);
 uint8_t game_select_menu() {
   Menu m = Menu(lcd, 0x12, lcd.rgb(0,0,0));
 
-  if (1) { // setup
+  if (true) { // setup
     m.init();
 
     m.add_button(0, 0, 70, 65, 100, 75, lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
@@ -22,36 +22,34 @@ uint8_t game_select_menu() {
     m.draw();
   }
 
-  if (1) { // loop
-    while (true) {
-      switch (button_grid.scan()) {
-        case 0xFF:
-          break;
-        case 0x10:
-          m.move(2);
-          break;
-        case 0x11:
-          m.move(1);
-          break;
-        case 0x12:
-          m.move(0);
-          break;
-        case 0x13:
-          m.move(3);
-          break;
-        case 0x02:
-          switch (m.get_position()) {
-            case 0x00:
-              m.undraw();
-              return 1;
-              break;
-            case 0x01:
-              m.undraw();
-              return 5;
-              break;
-          }
-          break;
-      }
+  while (true) { // loop
+    switch (button_grid.scan()) {
+      case 0xFF:
+        break;
+      case 0x10:
+        m.move(2);
+        break;
+      case 0x11:
+        m.move(1);
+        break;
+      case 0x12:
+        m.move(0);
+        break;
+      case 0x13:
+        m.move(3);
+        break;
+      case 0x02:
+        switch (m.get_position()) {
+          case 0x00:
+            m.undraw();
+            return 1;
+            break;
+          case 0x01:
+            m.undraw();
+            return 5;
+            break;
+        }
+        break;
     }
   }
 }
@@ -59,7 +57,7 @@ uint8_t game_select_menu() {
 uint8_t tetris_menu() {
   Menu m = Menu(lcd, 0x13, lcd.rgb(0,0,0));
 
-  if (1) { // setup
+  if (true) { // setup
     m.init();
 
     m.add_button(0, 0, 70, 50, 100, 50, lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
@@ -69,39 +67,37 @@ uint8_t tetris_menu() {
     m.draw(); 
   }
 
-  if (1) { // loop
-    while (true) {
-      switch (button_grid.scan()) {
-        case 0xFF:
-          break;
-        case 0x10:
-          m.move(2);
-          break;
-        case 0x11:
-          m.move(1);
-          break;
-        case 0x12:
-          m.move(0);
-          break;
-        case 0x13:
-          m.move(3);
-          break;
-        case 0x02:
-          switch (m.get_position()) {
-            case 0x00:
-              m.undraw();
-              return 2;
-              break;
-            case 0x01:
-              lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
-              break;
-            case 0x02:
-              m.undraw();
-              return 0;
-              break;
-          }
-          break;
-      }
+  while (true) { // loop
+    switch (button_grid.scan()) {
+      case 0xFF:
+        break;
+      case 0x10:
+        m.move(2);
+        break;
+      case 0x11:
+        m.move(1);
+        break;
+      case 0x12:
+        m.move(0);
+        break;
+      case 0x13:
+        m.move(3);
+        break;
+      case 0x02:
+        switch (m.get_position()) {
+          case 0x00:
+            m.undraw();
+            return 2;
+            break;
+          case 0x01:
+            lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
+            break;
+          case 0x02:
+            m.undraw();
+            return 0;
+            break;
+        }
+        break;
     }
   }
 }
@@ -116,98 +112,90 @@ uint8_t tetris_game() {
   unsigned long time_of_last_drop = 0;
   unsigned long time_of_last_move = 0;
 
-  if (1) { // setup
+  if (true) { // setup
     board.draw(lcd);
-
-    int8_t block_code = analogRead(A5) % 7;
     
-    block = {block_code, (int16_t)(floor((BOARD::WIDTH - (BLOCK_DATA->DIMENSIONS >> 4)) / 2) - 1), 0, 0};
-    board.add_block(block);
+    board.add_next_block();
     time_of_last_drop = millis();
     time_of_last_move = millis();
     board.draw(lcd);
   }
 
-  if (1) { // loop
-    while (true) {
-      switch (button_grid.scan()) {
-        case 0xFF:
-          break;
-        case 0x10:
-          if (board.move_block(block, DIRECTION::LEFT)) {
-            board.draw(lcd);
-            time_of_last_move = millis();
-          }
-          break;
-        case 0x11:
-          if (board.move_block(block, DIRECTION::DOWN)) {
-            board.draw(lcd);
-            time_of_last_move = millis();
-          }
-          break;
-        case 0x12:
-          board.drop(block);
+  while (true) { // loop
+    switch (button_grid.scan()) {
+      case 0xFF:
+        break;
+      case 0x10:
+        if (board.move_block(DIRECTION::LEFT)) {
           board.draw(lcd);
-          time_of_last_move = millis() + time_to_move;
-          break;
-        case 0x13:
-          if (board.move_block(block, DIRECTION::RIGHT)) {
-            board.draw(lcd);
-            time_of_last_move = millis();
-          }
-          break;
-        case 0x00:
-          if (board.rotate_block(block, DIRECTION::CCW)) {
-            board.draw(lcd);
-            time_of_last_move = millis();
-          }
-          break;
-        case 0x03:
-          if (board.rotate_block(block, DIRECTION::CW)) {
-            board.draw(lcd);
-            time_of_last_move = millis();
-          }
-          break;
-        case 0x01:
-          // hold block
-          break;
-        case 0x02:
-          return 1;
-          break;
+          time_of_last_move = millis();
+        }
+        break;
+      case 0x11:
+        if (board.move_block(DIRECTION::DOWN)) {
+          board.draw(lcd);
+          time_of_last_move = millis();
+        }
+        break;
+      case 0x12:
+        board.drop();
+        board.draw(lcd);
+        time_of_last_move = millis() + time_to_move;
+        break;
+      case 0x13:
+        if (board.move_block(DIRECTION::RIGHT)) {
+          board.draw(lcd);
+          time_of_last_move = millis();
+        }
+        break;
+      case 0x00:
+        if (board.rotate_block(DIRECTION::CCW)) {
+          board.draw(lcd);
+          time_of_last_move = millis();
+        }
+        break;
+      case 0x03:
+        if (board.rotate_block(DIRECTION::CW)) {
+          board.draw(lcd);
+          time_of_last_move = millis();
+        }
+        break;
+      case 0x01:
+        // hold block
+        break;
+      case 0x02:
+        return 1;
+        break;
+    }
+
+    if (millis() - time_of_last_drop > time_to_drop) {
+      if (board.move_block(DIRECTION::DOWN)) {
+        board.draw(lcd);
+        time_of_last_drop = millis();
+        time_of_last_move = millis();
       }
 
-      if (millis() - time_of_last_drop > time_to_drop) {
-        if (board.move_block(block, DIRECTION::DOWN)) {
-          board.draw(lcd);
-          time_of_last_drop = millis();
-          time_of_last_move = millis();
+      if (millis() - time_of_last_move > time_to_move) {
+        if (block.Y <= 0) {
+          return 1;
         }
 
-        if (millis() - time_of_last_move > time_to_move) {
-          if (block.Y <= 0) {
-            return 1;
-          }
-
-          board.clear_completed_lines();
-          board.draw(lcd);
-
-          int8_t block_code = analogRead(A5) % 7;
-    
-          block = {block_code, (int16_t)(floor((BOARD::WIDTH - (BLOCK_DATA->DIMENSIONS >> 4)) / 2) - 1), 0, 0};
-          board.add_block(block);
-          board.draw(lcd);
-          time_of_last_drop = millis();
-          time_of_last_move = millis();
-        }
+        board.clear_completed_lines();
+        board.draw(lcd);
+  
+        board.add_next_block();
+        board.draw(lcd);
+        time_of_last_drop = millis();
+        time_of_last_move = millis();
       }
     }
-  }  
-}
+  }
+}  
 
 uint8_t minesweeper_menu() {
   Menu m = Menu(lcd, 0x13, lcd.rgb(0,0,0));
 
-  if (1) { // setup
+  if (true) { // setup
     m.init();
 
     m.add_button(0, 0, 70, 50, 100, 50, lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
@@ -217,38 +205,36 @@ uint8_t minesweeper_menu() {
     m.draw();
   }
 
-  if (1) { // loop
-    while (true) {
-      switch (button_grid.scan()) {
-        case 0xFF:
-          break;
-        case 0x10:
-          m.move(2);
-          break;
-        case 0x11:
-          m.move(1);
-          break;
-        case 0x12:
-          m.move(0);
-          break;
-        case 0x13:
-          m.move(3);
-          break;
-        case 0x02:
-          switch (m.get_position()) {
-            case 0x00:
-              lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,255));
-              break;
-            case 0x01:
-              lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,255,255));
-              break;
-            case 0x02:
-              m.undraw();
-              return 0;
-              break;
-          }
-          break;
-      }
+  while (true) { // loop
+    switch (button_grid.scan()) {
+      case 0xFF:
+        break;
+      case 0x10:
+        m.move(2);
+        break;
+      case 0x11:
+        m.move(1);
+        break;
+      case 0x12:
+        m.move(0);
+        break;
+      case 0x13:
+        m.move(3);
+        break;
+      case 0x02:
+        switch (m.get_position()) {
+          case 0x00:
+            lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,255));
+            break;
+          case 0x01:
+            lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,255,255));
+            break;
+          case 0x02:
+            m.undraw();
+            return 0;
+            break;
+        }
+        break;
     }
   }
 }

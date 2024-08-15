@@ -11,6 +11,19 @@ Board::Board(int board_pos_x, int board_pos_y) {
             board_matrix[i][j][1] = 8;
         }
     }
+
+    this->block_codes = new int8_t[BOARD::FUTURE_BLOCKS_AMOUNT];
+    this->block_code_index = 0;
+
+    randomSeed(analogRead(BOARD::RANDOM_VALUE_PIN));
+
+    for (int8_t i = 0; i < BOARD::FUTURE_BLOCKS_AMOUNT; i++) {
+        this->block_codes[i] = (int8_t)random(BOARD::BLOCKS_AMOUNT);
+    }
+}
+
+Board::~Board() {
+    delete[] this->block_codes;
 }
 
 
@@ -31,53 +44,62 @@ void Board::draw(ST7789V lcd, bool force_draw) {
 }
 
 
-void Board::add_block(Block block) {
-    this->update_block(block, 1); // add block
+void Board::add_next_block() {
+    this->block = {this->block_codes[this->block_code_index], (int16_t)(floor((BOARD::WIDTH - (BLOCK_DATA->DIMENSIONS >> 4)) / 2) - 1), 0, 0};
+    this->block_codes[this->block_code_index] = random(BOARD::BLOCKS_AMOUNT);
+    this->block_code_index = (this->block_code_index + 1) % BOARD::FUTURE_BLOCKS_AMOUNT;
+
+    this->block_util(1); // add block
 }
 
-void Board::remove_block(Block block) {
-    this->update_block(block, 0); // remove block
+
+void Board::add_block() {
+    this->block_util(1); // add block
 }
 
-bool Board::check_collision(Block& block) {
-    return this->update_block(block, 2); // check for collisions, if there is return false if not return true
+void Board::remove_block() {
+    this->block_util(0); // remove block
 }
 
-bool Board::update_block(Block block, int8_t update_method) {
+bool Board::check_collision() {
+    return this->block_util(2); // check for collisions, if there is return false if not return true
+}
+
+bool Board::block_util(int8_t update_method) {
     int8_t board_y = 0;
     int8_t board_x = 0;
 
     int8_t bit_index = sizeof(BLOCK_DATA) / sizeof(BLOCK_DATA[0]) + 1;
-    for (int y = 0; y < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4); y++) {
-        for (int x = 0; x < (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F); x++) {
-            if (((BLOCK_DATA[block.BLOCK_CODE].SHAPE >> --bit_index) & 0x01) == 0) {
+    for (int y = 0; y < (BLOCK_DATA[this->block.BLOCK_CODE].DIMENSIONS >> 4); y++) {
+        for (int x = 0; x < (BLOCK_DATA[this->block.BLOCK_CODE].DIMENSIONS & 0x0F); x++) {
+            if (((BLOCK_DATA[this->block.BLOCK_CODE].SHAPE >> --bit_index) & 0x01) == 0) {
                 continue;
             }
             
-            switch (block.ROTATION) {
+            switch (this->block.ROTATION) {
                 case 0:
-                    board_y = block.Y + y;
-                    board_x = block.X + x;
+                    board_y = this->block.Y + y;
+                    board_x = this->block.X + x;
                     break;
                 case 1: // mirrored on x, switched x with y
-                    board_y = block.Y + x;
-                    board_x = block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y;
+                    board_y = this->block.Y + x;
+                    board_x = this->block.X + (BLOCK_DATA[this->block.BLOCK_CODE].DIMENSIONS >> 4) - y;
                     break;
                 case 2: // mirrored on x, y
-                    board_y = block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS >> 4) - y;
-                    board_x = block.X + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x;
+                    board_y = this->block.Y + (BLOCK_DATA[this->block.BLOCK_CODE].DIMENSIONS >> 4) - y;
+                    board_x = this->block.X + (BLOCK_DATA[this->block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x;
                     break;
                 case 3: // mirrored on y, switched x with y
-                    board_y = block.Y + (BLOCK_DATA[block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x;
-                    board_x = block.X + y ;
+                    board_y = this->block.Y + (BLOCK_DATA[this->block.BLOCK_CODE].DIMENSIONS & 0x0F) - 1 - x;
+                    board_x = this->block.X + y ;
                     break;
                 default:
                     break;
             }
 
-            if (block.BLOCK_CODE == 0 || block.BLOCK_CODE == 3) {
-                board_y += BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][1];
-                board_x += BLOCK_DATA[block.BLOCK_CODE].OFFSET[block.ROTATION][0];
+            if (this->block.BLOCK_CODE == 0 || this->block.BLOCK_CODE == 3) {
+                board_y += BLOCK_DATA[this->block.BLOCK_CODE].OFFSET[this->block.ROTATION][1];
+                board_x += BLOCK_DATA[this->block.BLOCK_CODE].OFFSET[this->block.ROTATION][0];
             }
 
             switch (update_method) {
@@ -85,7 +107,7 @@ bool Board::update_block(Block block, int8_t update_method) {
                     board_matrix[board_y][board_x][1] = 8;
                     break;
                 case 1:
-                    board_matrix[board_y][board_x][1] = block.BLOCK_CODE;
+                    board_matrix[board_y][board_x][1] = this->block.BLOCK_CODE;
                     break;
                 case 2:
                     if (board_y < 0 || board_y >= BOARD::HEIGHT || board_x < 0 || board_x >= BOARD::WIDTH) {
@@ -107,69 +129,68 @@ bool Board::update_block(Block block, int8_t update_method) {
 }
 
 
-bool Board::move_block(Block& block, int8_t move_direction) {
+bool Board::move_block(int8_t move_direction) {
     if (move_direction != DIRECTION::UP && move_direction != DIRECTION::DOWN && move_direction != DIRECTION::LEFT && move_direction != DIRECTION::RIGHT) {
         return false;
     }
 
     bool state = true;
 
-    this->remove_block(block);
+    this->remove_block();
     switch (move_direction) {
         case DIRECTION::UP:
-            block.Y--;
-            if (!check_collision(block)) {
-                block.Y++;
+            this->block.Y--;
+            if (!check_collision()) {
+                this->block.Y++;
                 state = false;
             }
             break;
         case DIRECTION::DOWN:
-            block.Y++;
-            if (!check_collision(block)) {
-                block.Y--;
+            this->block.Y++;
+            if (!check_collision()) {
+                this->block.Y--;
                 state = false;
             }
             break;
         case DIRECTION::LEFT:
-            block.X--;
-            if (!check_collision(block)) {
-                block.X++;
+            this->block.X--;
+            if (!check_collision()) {
+                this->block.X++;
                 state = false;
             }
             break;
         case DIRECTION::RIGHT:
-            block.X++;
-            if (!check_collision(block)) {
-                block.X--;
+            this->block.X++;
+            if (!check_collision()) {
+                this->block.X--;
                 state = false;
             }
             break;
     }
-    this->add_block(block);
+    this->add_block();
 
     return state;
 }
 
-bool Board::rotate_block(Block& block, int8_t rotate_direction) {
+bool Board::rotate_block(int8_t rotate_direction) {
     if (rotate_direction != DIRECTION::CW && rotate_direction != DIRECTION::CCW) {
         return false;
     }
 
-    this->remove_block(block);
-    bool state = try_WKO(block, rotate_direction);
-    this->add_block(block);
-
+    this->remove_block();
+    bool state = try_WKO(rotate_direction);
+    this->add_block();
     return state;
 }
 
-void Board::drop(Block& block) {
-    if (this->move_block(block, DIRECTION::DOWN)) {
-        this->drop(block);
+void Board::drop() {
+        if (this->move_block(DIRECTION::DOWN)) {
+        this->drop();
     }
 }
 
 
-bool Board::try_WKO(Block& block, int8_t rotate_direction) {
+bool Board::try_WKO(int8_t rotate_direction) {
     int8_t rotate_offset = 0;
     switch (rotate_direction) {
         case DIRECTION::CW:
@@ -178,10 +199,10 @@ bool Board::try_WKO(Block& block, int8_t rotate_direction) {
         case DIRECTION::CCW:
             rotate_offset = -1;
             break;
-}
+    }
 
     bool which_block = 0;
-    switch (block.BLOCK_CODE) {
+    switch (this->block.BLOCK_CODE) {
         case 6:
             which_block = 1;
             break;
@@ -193,19 +214,19 @@ bool Board::try_WKO(Block& block, int8_t rotate_direction) {
     }
 
     for (int i = 0; i < 5; i++) {
-        block.X += WKO[which_block][rotate_direction][block.ROTATION][i][0];
-        block.Y += WKO[which_block][rotate_direction][block.ROTATION][i][1];
+        this->block.X += WKO[which_block][rotate_direction][this->block.ROTATION][i][0];
+        this->block.Y += WKO[which_block][rotate_direction][this->block.ROTATION][i][1];
 
-        block.ROTATION = (block.ROTATION + rotate_offset) & 3;
+        this->block.ROTATION = (this->block.ROTATION + rotate_offset) & 3;
 
-        if (check_collision(block)) {
+        if (check_collision()) {
             return true;
         }
 
-        block.ROTATION = (block.ROTATION - rotate_offset) & 3;
+        this->block.ROTATION = (this->block.ROTATION - rotate_offset) & 3;
 
-        block.X -= WKO[which_block][rotate_direction][block.ROTATION][i][0];
-        block.Y -= WKO[which_block][rotate_direction][block.ROTATION][i][1];
+        this->block.X -= WKO[which_block][rotate_direction][this->block.ROTATION][i][0];
+        this->block.Y -= WKO[which_block][rotate_direction][this->block.ROTATION][i][1];
     }
 
     return false;
