@@ -103,8 +103,7 @@ uint8_t tetris_menu() {
 }
 
 uint8_t tetris_game() {
-  Board board = Board();
-  Block block;
+  Board board = Board(0, 0, 176, 16);
 
   uint16_t time_to_drop = 1000;
   uint16_t time_to_move = 3000;
@@ -116,9 +115,11 @@ uint8_t tetris_game() {
     board.draw(lcd);
     
     board.add_next_block();
+    board.draw(lcd);
     time_of_last_drop = millis();
     time_of_last_move = millis();
-    board.draw(lcd);
+
+    board.draw_display(lcd);
   }
 
   while (true) { // loop
@@ -176,7 +177,7 @@ uint8_t tetris_game() {
       }
 
       if (millis() - time_of_last_move > time_to_move) {
-        if (block.Y <= 0) {
+        if (board.get_block_y() <= 1) {
           return 1;
         }
 
@@ -187,6 +188,8 @@ uint8_t tetris_game() {
         board.draw(lcd);
         time_of_last_drop = millis();
         time_of_last_move = millis();
+
+        board.draw_display(lcd);
       }
     }
   }

@@ -10,7 +10,7 @@
 
 class Board {
 public:
-    Board(int board_pos_x=0, int board_pos_y=0);
+    Board(int16_t _board_pos_x=0, int16_t _board_pos_y=0, int16_t _display_pos_x=0, int16_t _display_pos_y=0);
     ~Board();
 
     void draw(ST7789V lcd, bool force_draw=false);
@@ -28,14 +28,21 @@ public:
 
     uint8_t clear_completed_lines();
 
+    int8_t get_block_y();
+
+    void draw_display(ST7789V lcd);
+
 private:
-    int board_pos_x;
-    int board_pos_y;
+    int16_t board_pos_x;
+    int16_t board_pos_y;
     int8_t board_matrix[BOARD::HEIGHT][BOARD::WIDTH][BOARD::DEPTH]; // 2D array to store board state
 
     int8_t* block_codes;
     uint8_t block_code_index;
     Block block;
+
+    int16_t display_pos_x;
+    int16_t display_pos_y;
 
     bool block_util(int8_t update_method);
 
