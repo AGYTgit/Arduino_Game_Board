@@ -26,11 +26,14 @@ public:
 
     void drop();
 
+    void hold();
+
     uint8_t clear_completed_lines();
 
     int8_t get_block_y();
 
-    void draw_display(ST7789V lcd);
+    void display_future_blocks(ST7789V lcd);
+    void display_hold_block(ST7789V lcd);
 
 private:
     int16_t board_pos_x;
@@ -40,6 +43,8 @@ private:
     int8_t* block_codes;
     uint8_t block_code_index;
     Block block;
+
+    int8_t held_block_code;
 
     int16_t display_pos_x;
     int16_t display_pos_y;

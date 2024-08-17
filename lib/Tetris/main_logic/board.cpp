@@ -17,6 +17,8 @@ Board::Board(int16_t _board_pos_x, int16_t _board_pos_y, int16_t _display_pos_x,
     for (int8_t i = 0; i < BOARD::FUTURE_BLOCKS_AMOUNT; i++) {
         this->block_codes[i] = analogRead(BOARD::RANDOM_VALUE_PIN) % BOARD::BLOCKS_AMOUNT;
     }
+
+    this->held_block_code = -1;
 }
 
 Board::~Board() {
@@ -228,6 +230,20 @@ void Board::drop() {
     }
 }
 
+void Board::hold() {
+    if (this->held_block_code == -1) {
+        this->remove_block();
+        this->held_block_code = this->block.BLOCK_CODE;
+        this->add_next_block();
+    }
+    
+    this->remove_block();
+    int8_t temp = this->block.BLOCK_CODE;
+    this->block = {this->held_block_code, (int16_t)(floor((BOARD::WIDTH - (BLOCK_DATA->DIMENSIONS >> 4)) / 2) - 1), 0, 0};
+    this->held_block_code = temp;
+    this->add_block();
+}
+
 uint8_t Board::clear_completed_lines() {
     int cleared_lines = 0;
     
@@ -266,7 +282,7 @@ int8_t Board::get_block_y() {
 }
 
 
-void Board::draw_display(ST7789V lcd) {
+void Board::display_future_blocks(ST7789V lcd) {
     lcd.draw_rect(this->display_pos_x, this->display_pos_y, BOARD::DISPLAY_GRID_SIZE * 4, BOARD::DISPLAY_GRID_SIZE * 4 * BOARD::FUTURE_BLOCKS_AMOUNT, lcd.rgb(50,50,50));
 
     for (int8_t i = 0; i < BOARD::FUTURE_BLOCKS_AMOUNT; i++) {
@@ -280,6 +296,22 @@ void Board::draw_display(ST7789V lcd) {
 
                 lcd.draw_rect(this->display_pos_x + (BOARD::DISPLAY_GRID_SIZE * x), this->display_pos_y + (BOARD::DISPLAY_GRID_SIZE * y) + (BOARD::DISPLAY_GRID_SIZE * i * (BOARD::FUTURE_BLOCKS_AMOUNT - 1)), BOARD::DISPLAY_GRID_SIZE, BOARD::DISPLAY_GRID_SIZE, BLOCK_DATA[block_code].COLOR);
             }
+        }
+    }
+}
+
+void Board::display_hold_block(ST7789V lcd) {
+    lcd.draw_rect(this->display_pos_x, this->display_pos_y + (BOARD::DISPLAY_GRID_SIZE * 4 * BOARD::FUTURE_BLOCKS_AMOUNT) + 16, BOARD::DISPLAY_GRID_SIZE * 4, BOARD::DISPLAY_GRID_SIZE * 4, lcd.rgb(50,50,50));
+
+    int8_t bit_index = BOARD::BLOCKS_AMOUNT + 1;
+    int8_t block_code = this->held_block_code;
+    for (int y = 0; y < (BLOCK_DATA[block_code].DIMENSIONS >> 4); y++) {
+        for (int x = 0; x < (BLOCK_DATA[block_code].DIMENSIONS & 0x0F); x++) {
+            if (((BLOCK_DATA[block_code].SHAPE >> --bit_index) & 0x01) == 0) {
+                continue;
+            }
+
+            lcd.draw_rect(this->display_pos_x + (BOARD::DISPLAY_GRID_SIZE * x), this->display_pos_y + (BOARD::DISPLAY_GRID_SIZE * y) + (BOARD::DISPLAY_GRID_SIZE * (BOARD::FUTURE_BLOCKS_AMOUNT - 1)) + (BOARD::DISPLAY_GRID_SIZE * 4 * BOARD::FUTURE_BLOCKS_AMOUNT) + 16 - (12 * 4), BOARD::DISPLAY_GRID_SIZE, BOARD::DISPLAY_GRID_SIZE, BLOCK_DATA[block_code].COLOR);
         }
     }
 }

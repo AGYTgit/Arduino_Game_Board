@@ -103,13 +103,16 @@ uint8_t tetris_menu() {
 }
 
 uint8_t tetris_game() {
-  Board board = Board(0, 0, 176, 16);
+  Board board = Board(0, 0, 176, 8);
 
   uint16_t time_to_drop = 1000;
   uint16_t time_to_move = 3000;
 
   unsigned long time_of_last_drop = 0;
   unsigned long time_of_last_move = 0;
+
+  bool first_hold_state = true;
+  bool hold_allowed_state = true;
 
   if (true) { // setup
     board.draw(lcd);
@@ -119,7 +122,7 @@ uint8_t tetris_game() {
     time_of_last_drop = millis();
     time_of_last_move = millis();
 
-    board.draw_display(lcd);
+    board.display_future_blocks(lcd);
   }
 
   while (true) { // loop
@@ -141,6 +144,7 @@ uint8_t tetris_game() {
       case 0x12:
         board.drop();
         board.draw(lcd);
+        time_of_last_drop = 0;
         time_of_last_move = millis() + time_to_move;
         break;
       case 0x13:
@@ -155,42 +159,55 @@ uint8_t tetris_game() {
           time_of_last_move = millis();
         }
         break;
+      case 0x01:
+      if (hold_allowed_state) {
+          hold_allowed_state = false;
+          board.hold();
+          board.draw(lcd);
+          if (first_hold_state) {
+            first_hold_state = false;
+            board.display_future_blocks(lcd);
+          }
+          board.display_hold_block(lcd);
+          time_of_last_drop = millis();
+          time_of_last_move = millis();
+        }
+        break;
+      case 0x02:
+        return 1;
+        break;
       case 0x03:
         if (board.rotate_block(DIRECTION::CW)) {
           board.draw(lcd);
           time_of_last_move = millis();
         }
         break;
-      case 0x01:
-        // hold block
-        break;
-      case 0x02:
-        return 1;
-        break;
     }
 
-    if (millis() - time_of_last_drop > time_to_drop) {
+    if (millis() - time_of_last_drop >= time_to_drop) {
       if (board.move_block(DIRECTION::DOWN)) {
         board.draw(lcd);
         time_of_last_drop = millis();
         time_of_last_move = millis();
       }
+    }
 
-      if (millis() - time_of_last_move > time_to_move) {
-        if (board.get_block_y() <= 1) {
-          return 1;
-        }
-
-        board.clear_completed_lines();
-        board.draw(lcd);
-  
-        board.add_next_block();
-        board.draw(lcd);
-        time_of_last_drop = millis();
-        time_of_last_move = millis();
-
-        board.draw_display(lcd);
+    if (millis() - time_of_last_move >= time_to_move) {
+      if (board.get_block_y() <= 1) {
+        return 1;
       }
+
+      hold_allowed_state = true;
+
+      board.clear_completed_lines();
+      board.draw(lcd);
+
+      board.add_next_block();
+      board.draw(lcd);
+      time_of_last_drop = millis();
+      time_of_last_move = millis();
+
+      board.display_future_blocks(lcd);
     }
   }
 }  
