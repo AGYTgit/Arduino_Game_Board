@@ -2,7 +2,7 @@
 #include <gui.h>
 #include <ui.h>
 #include <Tetris.h>
-// #include <Minesweeper.h>
+#include <Minesweeper.h>
 
 
 ST7789V lcd = ST7789V();
@@ -11,7 +11,7 @@ Button_Grid button_grid = Button_Grid(8, 10, 0x24);
 
 
 void tetris_game() {
-  Board board = Board(0, 0, 176, 8);
+  Tetris_Board board = Tetris_Board(0, 0, 176, 8);
 
   uint16_t time_to_drop = 1000;
   uint16_t time_to_move = 3000;
@@ -309,9 +309,9 @@ void setup() {
   
   button_grid.init();
 
-  game_select_menu();
+  // game_select_menu();
 }
 
 void loop() {
-  // minesweeper_game();
+  minesweeper_game();
 }

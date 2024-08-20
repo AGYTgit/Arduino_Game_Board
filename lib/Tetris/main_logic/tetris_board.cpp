@@ -1,6 +1,6 @@
-#include "board.h"
+#include "tetris_board.h"
 
-Board::Board(int16_t _board_pos_x, int16_t _board_pos_y, int16_t _display_pos_x, int16_t _display_pos_y) :
+Tetris_Board::Tetris_Board(int16_t _board_pos_x, int16_t _board_pos_y, int16_t _display_pos_x, int16_t _display_pos_y) :
     board_pos_x(_board_pos_x), board_pos_y(_board_pos_y), display_pos_x(_display_pos_x), display_pos_y(_display_pos_y) {
 
     // Initialize board matrix
@@ -11,7 +11,6 @@ Board::Board(int16_t _board_pos_x, int16_t _board_pos_y, int16_t _display_pos_x,
         }
     }
 
-    this->block_codes = new int8_t[TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT];
     this->block_code_index = 0;
 
     for (int8_t i = 0; i < TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT; i++) {
@@ -21,12 +20,7 @@ Board::Board(int16_t _board_pos_x, int16_t _board_pos_y, int16_t _display_pos_x,
     this->held_block_code = -1;
 }
 
-Board::~Board() {
-    delete[] this->block_codes;
-}
-
-
-void Board::draw(ST7789V lcd, bool force_draw) {
+void Tetris_Board::draw(ST7789V& lcd, bool force_draw) {
     for (uint8_t i = 0; i < TETRIS_BOARD::HEIGHT; i++) {
         for (uint8_t j = 0; j < TETRIS_BOARD::WIDTH; j++) {
             if (board_matrix[i][j][0] != board_matrix[i][j][1] || force_draw) {
@@ -43,7 +37,7 @@ void Board::draw(ST7789V lcd, bool force_draw) {
 }
 
 
-void Board::add_next_block() {
+void Tetris_Board::add_next_block() {
     this->block = {this->block_codes[this->block_code_index], (int16_t)(floor((TETRIS_BOARD::WIDTH - (BLOCK_DATA->DIMENSIONS >> 4)) / 2) - 1), 0, 0};
     this->block_codes[this->block_code_index] = analogRead(TETRIS_BOARD::RANDOM_VALUE_PIN) % TETRIS_BOARD::BLOCKS_AMOUNT;
     this->block_code_index = (this->block_code_index + 1) % TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT;
@@ -51,19 +45,19 @@ void Board::add_next_block() {
     this->block_util(1); // add block
 }
 
-void Board::add_block() {
+void Tetris_Board::add_block() {
     this->block_util(1); // add block
 }
 
-void Board::remove_block() {
+void Tetris_Board::remove_block() {
     this->block_util(0); // remove block
 }
 
-bool Board::check_collision() {
+bool Tetris_Board::check_collision() {
     return this->block_util(2); // check for collisions, if there is return false if not return true
 }
 
-bool Board::block_util(int8_t update_method) {
+bool Tetris_Board::block_util(int8_t update_method) {
     int8_t board_y = 0;
     int8_t board_x = 0;
 
@@ -127,7 +121,7 @@ bool Board::block_util(int8_t update_method) {
 }
 
 
-bool Board::move_block(int8_t move_direction) {
+bool Tetris_Board::move_block(int8_t move_direction) {
     if (move_direction != TETRIS_DIRECTION::UP && move_direction != TETRIS_DIRECTION::DOWN && move_direction != TETRIS_DIRECTION::LEFT && move_direction != TETRIS_DIRECTION::RIGHT) {
         return false;
     }
@@ -170,7 +164,7 @@ bool Board::move_block(int8_t move_direction) {
     return state;
 }
 
-bool Board::rotate_block(int8_t rotate_direction) {
+bool Tetris_Board::rotate_block(int8_t rotate_direction) {
     if (rotate_direction != TETRIS_DIRECTION::CW && rotate_direction != TETRIS_DIRECTION::CCW) {
         return false;
     }
@@ -181,7 +175,7 @@ bool Board::rotate_block(int8_t rotate_direction) {
     return state;
 }
 
-bool Board::try_WKO(int8_t rotate_direction) {
+bool Tetris_Board::try_WKO(int8_t rotate_direction) {
     int8_t rotate_offset = 0;
     switch (rotate_direction) {
         case TETRIS_DIRECTION::CW:
@@ -224,13 +218,13 @@ bool Board::try_WKO(int8_t rotate_direction) {
 }
 
 
-void Board::drop() {
+void Tetris_Board::drop() {
         if (this->move_block(TETRIS_DIRECTION::DOWN)) {
         this->drop();
     }
 }
 
-void Board::hold() {
+void Tetris_Board::hold() {
     if (this->held_block_code == -1) {
         this->remove_block();
         this->held_block_code = this->block.BLOCK_CODE;
@@ -244,7 +238,7 @@ void Board::hold() {
     }
 }
 
-uint8_t Board::clear_completed_lines() {
+uint8_t Tetris_Board::clear_completed_lines() {
     int cleared_lines = 0;
     
     for (int y = TETRIS_BOARD::HEIGHT - 1; y >= 0; y--) {
@@ -277,12 +271,12 @@ uint8_t Board::clear_completed_lines() {
     return cleared_lines;
 }
 
-int8_t Board::get_block_y() {
+int8_t Tetris_Board::get_block_y() {
     return this->block.Y;
 }
 
 
-void Board::display_future_blocks(ST7789V lcd) {
+void Tetris_Board::display_future_blocks(ST7789V& lcd) {
     lcd.draw_rect(this->display_pos_x, this->display_pos_y, TETRIS_BOARD::DISPLAY_GRID_SIZE * 4, TETRIS_BOARD::DISPLAY_GRID_SIZE * 4 * TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT, lcd.rgb(50,50,50));
 
     for (int8_t i = 0; i < TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT; i++) {
@@ -300,7 +294,7 @@ void Board::display_future_blocks(ST7789V lcd) {
     }
 }
 
-void Board::display_hold_block(ST7789V lcd) {
+void Tetris_Board::display_hold_block(ST7789V& lcd) {
     lcd.draw_rect(this->display_pos_x, this->display_pos_y + (TETRIS_BOARD::DISPLAY_GRID_SIZE * 4 * TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT) + 16, TETRIS_BOARD::DISPLAY_GRID_SIZE * 4, TETRIS_BOARD::DISPLAY_GRID_SIZE * 4, lcd.rgb(50,50,50));
 
     int8_t bit_index = TETRIS_BOARD::BLOCKS_AMOUNT + 1;

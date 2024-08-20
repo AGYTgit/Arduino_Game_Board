@@ -1,5 +1,5 @@
-#ifndef board_h
-#define board_h
+#ifndef TETRIS_BOARD_H
+#define TETRIS_BOARD_H
 
 #include <Arduino.h>
 
@@ -8,12 +8,11 @@
 #include "settings-data/tetris_database.h"
 #include "settings-data/tetris_settings.h"
 
-class Board {
+class Tetris_Board {
 public:
-    Board(int16_t _board_pos_x=0, int16_t _board_pos_y=0, int16_t _display_pos_x=0, int16_t _display_pos_y=0);
-    ~Board();
+    Tetris_Board(int16_t _board_pos_x=0, int16_t _board_pos_y=0, int16_t _display_pos_x=0, int16_t _display_pos_y=0);
 
-    void draw(ST7789V lcd, bool force_draw=false);
+    void draw(ST7789V& lcd, bool force_draw=false);
 
     void add_next_block();
 
@@ -32,15 +31,16 @@ public:
 
     int8_t get_block_y();
 
-    void display_future_blocks(ST7789V lcd);
-    void display_hold_block(ST7789V lcd);
+    void display_future_blocks(ST7789V& lcd);
+    void display_hold_block(ST7789V& lcd);
 
 private:
     int16_t board_pos_x;
     int16_t board_pos_y;
-    int8_t board_matrix[TETRIS_BOARD::HEIGHT][TETRIS_BOARD::WIDTH][TETRIS_BOARD::DEPTH]; // 2D array to store board state
+    // 3D array to store state of each grid block (present, future)
+    int8_t board_matrix[TETRIS_BOARD::HEIGHT][TETRIS_BOARD::WIDTH][TETRIS_BOARD::DEPTH];
 
-    int8_t* block_codes;
+    int8_t block_codes[TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT];
     uint8_t block_code_index;
     Block block;
 
@@ -54,4 +54,4 @@ private:
     bool try_WKO(int8_t rotate_direction);
 };
 
-#endif // board_h
+#endif // TETRIS_BOARD_H
