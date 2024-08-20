@@ -6,6 +6,8 @@
 
 class Button {
 private:
+  ST7789V* lcd;
+
   uint16_t pos_x;
   uint16_t pos_y;
   uint16_t width;
@@ -18,11 +20,11 @@ private:
 
 public:
   Button();
-  Button(uint16_t _pos_x, uint16_t _pos_y, uint16_t _width, uint16_t _height, uint16_t _color, uint8_t _border_thickness, uint16_t _highlight_color);
-  void draw(ST7789V lcd);
-  void draw(ST7789V lcd, uint16_t color);
-  void highlight(ST7789V lcd);
-  void unhighlight(ST7789V lcd);
+  Button(ST7789V* lcd, uint16_t _pos_x, uint16_t _pos_y, uint16_t _width, uint16_t _height, uint16_t _color, uint8_t _border_thickness, uint16_t _highlight_color);
+  void draw();
+  void draw(uint16_t color);
+  void highlight();
+  void unhighlight();
 };
 
 #endif  // BUTTON_H

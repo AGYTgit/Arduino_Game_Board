@@ -10,99 +10,7 @@ ST7789V lcd = ST7789V();
 Button_Grid button_grid = Button_Grid(8, 10, 0x24);
 
 
-uint8_t game_select_menu() {
-  Menu m = Menu(lcd, 0x12, lcd.rgb(0,0,0));
-
-  if (true) { // setup
-    m.init();
-
-    m.add_button(0, 0, 70, 65, 100, 75, lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
-    m.add_button(0, 1, 70, 180, 100, 75, lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
-
-    m.draw();
-  }
-
-  while (true) { // loop
-    switch (button_grid.scan()) {
-      case 0xFF:
-        break;
-      case 0x10:
-        m.move(2);
-        break;
-      case 0x11:
-        m.move(1);
-        break;
-      case 0x12:
-        m.move(0);
-        break;
-      case 0x13:
-        m.move(3);
-        break;
-      case 0x02:
-        switch (m.get_position()) {
-          case 0x00:
-            m.undraw();
-            return 1;
-            break;
-          case 0x01:
-            m.undraw();
-            return 5;
-            break;
-        }
-        break;
-    }
-  }
-}
-
-uint8_t tetris_menu() {
-  Menu m = Menu(lcd, 0x13, lcd.rgb(0,0,0));
-
-  if (true) { // setup
-    m.init();
-
-    m.add_button(0, 0, 70, 50, 100, 50, lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
-    m.add_button(0, 1, 70, 120, 100, 50, lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
-    m.add_button(0, 2, 70, 190, 100, 50, lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
-
-    m.draw(); 
-  }
-
-  while (true) { // loop
-    switch (button_grid.scan()) {
-      case 0xFF:
-        break;
-      case 0x10:
-        m.move(2);
-        break;
-      case 0x11:
-        m.move(1);
-        break;
-      case 0x12:
-        m.move(0);
-        break;
-      case 0x13:
-        m.move(3);
-        break;
-      case 0x02:
-        switch (m.get_position()) {
-          case 0x00:
-            m.undraw();
-            return 2;
-            break;
-          case 0x01:
-            lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
-            break;
-          case 0x02:
-            m.undraw();
-            return 0;
-            break;
-        }
-        break;
-    }
-  }
-}
-
-uint8_t tetris_game() {
+void tetris_game() {
   Board board = Board(0, 0, 176, 8);
 
   uint16_t time_to_drop = 1000;
@@ -174,7 +82,7 @@ uint8_t tetris_game() {
         }
         break;
       case 0x02:
-        return 1;
+        return;
         break;
       case 0x03:
         if (board.rotate_block(DIRECTION::CW)) {
@@ -194,7 +102,7 @@ uint8_t tetris_game() {
 
     if (millis() - time_of_last_move >= time_to_move) {
       if (board.get_block_y() <= 1) {
-        return 1;
+        return;
       }
 
       hold_allowed_state = true;
@@ -210,17 +118,71 @@ uint8_t tetris_game() {
       board.display_future_blocks(lcd);
     }
   }
-}  
+}
 
-uint8_t minesweeper_menu() {
-  Menu m = Menu(lcd, 0x13, lcd.rgb(0,0,0));
+void tetris_menu() {
+  Menu m = Menu(0x13, lcd.rgb(0,0,0));
 
   if (true) { // setup
     m.init();
 
-    m.add_button(0, 0, 70, 50, 100, 50, lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
-    m.add_button(0, 1, 70, 120, 100, 50, lcd.rgb(0,255,255), 2, lcd.rgb(255,255,255));
-    m.add_button(0, 2, 70, 190, 100, 50, lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
+    m.add_button(lcd, 0, 0, 70, 50, 100, 50, lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
+    m.add_button(lcd, 0, 1, 70, 120, 100, 50, lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
+    m.add_button(lcd, 0, 2, 70, 190, 100, 50, lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
+
+    m.draw(); 
+  }
+
+  while (true) { // loop
+    switch (button_grid.scan()) {
+      case 0xFF:
+        break;
+      case 0x10:
+        m.move(2);
+        break;
+      case 0x11:
+        m.move(1);
+        break;
+      case 0x12:
+        m.move(0);
+        break;
+      case 0x13:
+        m.move(3);
+        break;
+      case 0x02:
+        switch (m.get_position()) {
+          case 0x00:
+            m.undraw();
+            tetris_game();
+            m.draw();
+            break;
+          case 0x01:
+            lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
+            break;
+          case 0x02:
+            m.undraw();
+            return;
+            break;
+        }
+        break;
+    }
+  }
+}
+
+
+void minesweeper_game() {
+  return;
+}
+
+void minesweeper_menu() {
+  Menu m = Menu(0x13, lcd.rgb(0,0,0));
+
+  if (true) { // setup
+    m.init();
+
+    m.add_button(lcd, 0, 0, 70, 50, 100, 50, lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
+    m.add_button(lcd, 0, 1, 70, 120, 100, 50, lcd.rgb(0,255,255), 2, lcd.rgb(255,255,255));
+    m.add_button(lcd, 0, 2, 70, 190, 100, 50, lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
 
     m.draw();
   }
@@ -244,14 +206,63 @@ uint8_t minesweeper_menu() {
       case 0x02:
         switch (m.get_position()) {
           case 0x00:
-            lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,255));
+            m.undraw();
+            minesweeper_game();
+            m.draw();
             break;
           case 0x01:
             lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,255,255));
             break;
           case 0x02:
             m.undraw();
-            return 0;
+            return;
+            break;
+        }
+        break;
+    }
+  }
+}
+
+
+void game_select_menu() {
+  Menu m = Menu(0x12, lcd.rgb(0,0,0));
+
+  if (true) { // setup
+    m.init();
+
+    m.add_button(lcd, 0, 0, 70, 65, 100, 75, lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
+    m.add_button(lcd, 0, 1, 70, 180, 100, 75, lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
+
+    m.draw();
+  }
+
+  while (true) { // loop
+    switch (button_grid.scan()) {
+      case 0xFF:
+        break;
+      case 0x10:
+        m.move(2);
+        break;
+      case 0x11:
+        m.move(1);
+        break;
+      case 0x12:
+        m.move(0);
+        break;
+      case 0x13:
+        m.move(3);
+        break;
+      case 0x02:
+        switch (m.get_position()) {
+          case 0x00:
+            m.undraw();
+            tetris_menu();
+            m.draw();
+            break;
+          case 0x01:
+            m.undraw();
+            minesweeper_menu();
+            m.draw();
             break;
         }
         break;
@@ -268,32 +279,8 @@ void setup() {
   lcd.fill();
   
   button_grid.init();
+
+  game_select_menu();
 }
 
-uint8_t menu_index = 0;
-
-void loop() {
-  // bug with button on 0x10
-
-  // uint8_t scan = button_grid.scan();
-  // if (scan != 0xFF) {
-  //   Serial.println(scan, HEX);
-  // }
-  switch (menu_index) {
-    case 0:
-      menu_index = game_select_menu();
-      break;
-    case 1:
-      menu_index = tetris_menu();
-      break;
-    case 2:
-      menu_index = tetris_game();
-      break;
-    case 5:
-      menu_index = minesweeper_menu();
-      break;
-    
-    default:
-      break;
-  }
-}
+void loop() {}

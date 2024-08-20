@@ -1,7 +1,7 @@
 #include "menu.h"
 
-Menu::Menu(ST7789V& _lcd, uint8_t _button_grid_dimensions, uint16_t _bg_color) :
-    lcd(_lcd), button_grid_dimensions(_button_grid_dimensions), bg_color(_bg_color), selected_position(0) {}
+Menu::Menu(uint8_t _button_grid_dimensions, uint16_t _bg_color) :
+    button_grid_dimensions(_button_grid_dimensions), bg_color(_bg_color), selected_position(0) {}
 
 Menu::~Menu() {
     for (uint8_t i = 0; i < (this->button_grid_dimensions >> 4); i++) {
@@ -24,19 +24,19 @@ void Menu::init() {
     }
 }
 
-void Menu::add_button(uint8_t button_grid_pos_x, uint8_t button_grid_pos_y, uint16_t pos_x, uint16_t pos_y, uint16_t width, uint16_t height, uint16_t color, uint8_t border_thickness, uint16_t highlight_color) {
+void Menu::add_button(ST7789V& lcd, uint8_t button_grid_pos_x, uint8_t button_grid_pos_y, uint16_t pos_x, uint16_t pos_y, uint16_t width, uint16_t height, uint16_t color, uint8_t border_thickness, uint16_t highlight_color) {
     if (button_grid_pos_x < (this->button_grid_dimensions >> 4) && button_grid_pos_y < (this->button_grid_dimensions & 0x0F)) {
-        this->buttons[button_grid_pos_x][button_grid_pos_y] = Button(pos_x, pos_y, width, height, color, border_thickness, highlight_color);
+        this->buttons[button_grid_pos_x][button_grid_pos_y] = Button(&lcd, pos_x, pos_y, width, height, color, border_thickness, highlight_color);
         this->button_active[button_grid_pos_x][button_grid_pos_y] = true;
     }
 }
 
 void Menu::draw() {
-    // this->lcd.fill(this->bg_color);
+    // lcd.fill(this->bg_color);
     for (uint8_t i = 0; i < (this->button_grid_dimensions >> 4); i++) {
         for (uint8_t j = 0; j < (this->button_grid_dimensions & 0x0F); j++) {
             if (this->button_active[i][j]) {
-                this->buttons[i][j].draw(this->lcd);
+                this->buttons[i][j].draw();
             }
         }
     }
@@ -47,7 +47,7 @@ void Menu::undraw() {
     for (uint8_t i = 0; i < (this->button_grid_dimensions >> 4); i++) {
         for (uint8_t j = 0; j < (this->button_grid_dimensions & 0x0F); j++) {
             if (this->button_active[i][j]) {
-                this->buttons[i][j].draw(this->lcd, this->bg_color);
+                this->buttons[i][j].draw(this->bg_color);
             }
         }
     }
@@ -74,8 +74,8 @@ void Menu::move(uint8_t direction) {
         return;
     }
 
-    this->buttons[old_row][old_col].unhighlight(this->lcd);
-    this->buttons[row][col].highlight(this->lcd);
+    this->buttons[old_row][old_col].unhighlight();
+    this->buttons[row][col].highlight();
 
     this->selected_position = (row << 4) | col;
 }
