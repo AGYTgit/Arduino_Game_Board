@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <ST7789V.h>
 #include <gui.h>
 #include <ui.h>
 #include <Tetris.h>
@@ -68,7 +67,7 @@ void tetris_game() {
         }
         break;
       case 0x01:
-      if (hold_allowed_state) {
+        if (hold_allowed_state) {
           hold_allowed_state = false;
           board.hold();
           board.draw(lcd);
@@ -171,7 +170,36 @@ void tetris_menu() {
 
 
 void minesweeper_game() {
-  return;
+
+
+  if (true) { // setup
+    lcd.draw_rect(0,0,50,50,lcd.rgb(255,255,255));
+  }
+
+  while (true) { // loop
+    switch (button_grid.scan()) {
+      case 0xFF:
+        break;
+      case 0x10:
+        break;
+      case 0x11:
+        break;
+      case 0x12:
+        break;
+      case 0x13:
+        break;
+      case 0x00:
+        break;
+      case 0x01:
+        break;
+      case 0x02:
+        lcd.draw_rect(0,0,50,50,lcd.rgb(0,0,0));
+        return;
+        break;
+      case 0x03:
+        break;
+    }
+  }
 }
 
 void minesweeper_menu() {
@@ -283,4 +311,6 @@ void setup() {
   game_select_menu();
 }
 
-void loop() {}
+void loop() {
+  // minesweeper_game();
+}

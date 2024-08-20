@@ -3,10 +3,10 @@
 
 #include <Arduino.h>
 
-#include <ST7789V.h>
+#include <gui.h>
 
-#include "settings-data/tetris_settings.h"
 #include "settings-data/block_data.h"
+#include "settings-data/tetris_settings.h"
 
 class Board {
 public:

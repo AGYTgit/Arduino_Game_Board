@@ -2,7 +2,8 @@
 #define BUTTON_H
 
 #include <Arduino.h>
-#include <ST7789V.h>
+
+#include "ST7789V/ST7789V.h"
 
 class Button {
 private:

@@ -1,8 +1,9 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include <ST7789V.h>
+#include <Arduino.h>
 
+#include "ST7789V/ST7789V.h"
 #include "button/button.h"
 
 class Menu {
