@@ -235,13 +235,13 @@ void Board::hold() {
         this->remove_block();
         this->held_block_code = this->block.BLOCK_CODE;
         this->add_next_block();
+    } else {
+        this->remove_block();
+        int8_t temp = this->block.BLOCK_CODE;
+        this->block = {this->held_block_code, (int16_t)(floor((BOARD::WIDTH - (BLOCK_DATA->DIMENSIONS >> 4)) / 2) - 1), 0, 0};
+        this->held_block_code = temp;
+        this->add_block();
     }
-    
-    this->remove_block();
-    int8_t temp = this->block.BLOCK_CODE;
-    this->block = {this->held_block_code, (int16_t)(floor((BOARD::WIDTH - (BLOCK_DATA->DIMENSIONS >> 4)) / 2) - 1), 0, 0};
-    this->held_block_code = temp;
-    this->add_block();
 }
 
 uint8_t Board::clear_completed_lines() {
