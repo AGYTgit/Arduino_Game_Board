@@ -1,5 +1,5 @@
-#ifndef BLOCK_DATA_H
-#define BLOCK_DATA_H
+#ifndef TETRIS_DATABASE_H
+#define TETRIS_DATABASE_H
 
 struct Block {
     int8_t BLOCK_CODE;
@@ -50,4 +50,4 @@ const int8_t WKO[2][2][4][5][2] = {
       {{0, 0},{-1, 0},{-1, 1},{ 0,-2},{-1,-2}}}}
 };
 
-#endif // BLOCK_DATA_H
+#endif // TETRIS_DATABASE_H

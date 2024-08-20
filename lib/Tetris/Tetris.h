@@ -2,7 +2,7 @@
 #define TETRIS_H
 
 #include "settings-data/tetris_settings.h"
-#include "settings-data/block_data.h"
+#include "settings-data/tetris_database.h"
 
 #include "main_logic/board.h"
 

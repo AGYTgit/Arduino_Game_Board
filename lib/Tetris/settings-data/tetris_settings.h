@@ -1,8 +1,8 @@
-#ifndef BOARD_CONSTANTS_H
-#define BOARD_CONSTANTS_H
+#ifndef TETRIS_SETTINGS_H
+#define TETRIS_SETTINGS_H
 
 
-namespace BOARD {
+namespace TETRIS_BOARD {
     const int8_t HEIGHT = 20;
     const int8_t WIDTH = 10;
     const int8_t DEPTH = 2;
@@ -17,12 +17,12 @@ namespace BOARD {
     const int8_t DISPLAY_GRID_SIZE = 12;
 } // namespace BOARD
 
-namespace SHAPE {
+namespace TETRIS_BLOCK_DIMENSIONS {
     const int8_t HEIGHT = 4;
     const int8_t WIDTH = 4;
 } // namespace SHAPE
 
-namespace DIRECTION {
+namespace TETRIS_DIRECTION {
     const int8_t UP = 0;
     const int8_t DOWN = 1;
     const int8_t LEFT = 2;
@@ -32,4 +32,4 @@ namespace DIRECTION {
     const int8_t CCW = 1;
 } // namespace MOVE
 
-#endif // BOARD_CONSTANTS_H
+#endif // TETRIS_SETTINGS_H

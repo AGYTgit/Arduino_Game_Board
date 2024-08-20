@@ -5,7 +5,7 @@
 
 #include <gui.h>
 
-#include "settings-data/block_data.h"
+#include "settings-data/tetris_database.h"
 #include "settings-data/tetris_settings.h"
 
 class Board {
@@ -38,7 +38,7 @@ public:
 private:
     int16_t board_pos_x;
     int16_t board_pos_y;
-    int8_t board_matrix[BOARD::HEIGHT][BOARD::WIDTH][BOARD::DEPTH]; // 2D array to store board state
+    int8_t board_matrix[TETRIS_BOARD::HEIGHT][TETRIS_BOARD::WIDTH][TETRIS_BOARD::DEPTH]; // 2D array to store board state
 
     int8_t* block_codes;
     uint8_t block_code_index;

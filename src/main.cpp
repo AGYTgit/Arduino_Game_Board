@@ -2,6 +2,7 @@
 #include <gui.h>
 #include <ui.h>
 #include <Tetris.h>
+// #include <Minesweeper.h>
 
 
 ST7789V lcd = ST7789V();
@@ -37,13 +38,13 @@ void tetris_game() {
       case 0xFF:
         break;
       case 0x10:
-        if (board.move_block(DIRECTION::LEFT)) {
+        if (board.move_block(TETRIS_DIRECTION::LEFT)) {
           board.draw(lcd);
           time_of_last_move = millis();
         }
         break;
       case 0x11:
-        if (board.move_block(DIRECTION::DOWN)) {
+        if (board.move_block(TETRIS_DIRECTION::DOWN)) {
           board.draw(lcd);
           time_of_last_move = millis();
         }
@@ -55,13 +56,13 @@ void tetris_game() {
         time_of_last_move = millis() + time_to_move;
         break;
       case 0x13:
-        if (board.move_block(DIRECTION::RIGHT)) {
+        if (board.move_block(TETRIS_DIRECTION::RIGHT)) {
           board.draw(lcd);
           time_of_last_move = millis();
         }
         break;
       case 0x00:
-        if (board.rotate_block(DIRECTION::CCW)) {
+        if (board.rotate_block(TETRIS_DIRECTION::CCW)) {
           board.draw(lcd);
           time_of_last_move = millis();
         }
@@ -84,7 +85,7 @@ void tetris_game() {
         return;
         break;
       case 0x03:
-        if (board.rotate_block(DIRECTION::CW)) {
+        if (board.rotate_block(TETRIS_DIRECTION::CW)) {
           board.draw(lcd);
           time_of_last_move = millis();
         }
@@ -92,7 +93,7 @@ void tetris_game() {
     }
 
     if (millis() - time_of_last_drop >= time_to_drop) {
-      if (board.move_block(DIRECTION::DOWN)) {
+      if (board.move_block(TETRIS_DIRECTION::DOWN)) {
         board.draw(lcd);
         time_of_last_drop = millis();
         time_of_last_move = millis();
