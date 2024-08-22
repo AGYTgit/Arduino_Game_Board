@@ -171,7 +171,7 @@ void tetris_menu() {
 
 
 void minesweeper_game() {
-
+  Minesweeper_Board board = Minesweeper_Board(0, 0);
 
   if (true) { // setup
     lcd.draw_rect(0,0,50,50,lcd.rgb(255,255,255));
@@ -192,8 +192,11 @@ void minesweeper_game() {
       case 0x00:
         break;
       case 0x01:
+        board.first_reveal();
+        board.draw(lcd);
         break;
       case 0x02:
+      lcd.fill();
         lcd.draw_rect(0,0,50,50,lcd.rgb(0,0,0));
         return;
         break;
