@@ -173,8 +173,11 @@ void tetris_menu() {
 void minesweeper_game() {
   Minesweeper_Board board = Minesweeper_Board(0, 0);
 
+  bool first_reveal = true;
+
   if (true) { // setup
     lcd.draw_rect(0,0,50,50,lcd.rgb(255,255,255));
+    board.draw(lcd, true);
   }
 
   while (true) { // loop
@@ -182,22 +185,34 @@ void minesweeper_game() {
       case 0xFF:
         break;
       case 0x10:
+        board.move_selected_pos(MINESWEEPER_DIRECTION::LEFT);
+        board.draw(lcd);
         break;
       case 0x11:
+        board.move_selected_pos(MINESWEEPER_DIRECTION::DOWN);
+        board.draw(lcd);
         break;
       case 0x12:
+        board.move_selected_pos(MINESWEEPER_DIRECTION::UP);
+        board.draw(lcd);
         break;
       case 0x13:
+        board.move_selected_pos(MINESWEEPER_DIRECTION::RIGHT);
+        board.draw(lcd);
         break;
       case 0x00:
         break;
       case 0x01:
-        board.first_reveal();
+        if (first_reveal) {
+          first_reveal = false;
+          board.first_reveal();
+        } else {
+          board.reveal();
+        }
         board.draw(lcd);
         break;
       case 0x02:
-      lcd.fill();
-        lcd.draw_rect(0,0,50,50,lcd.rgb(0,0,0));
+        lcd.fill();
         return;
         break;
       case 0x03:

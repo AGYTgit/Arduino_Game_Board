@@ -15,12 +15,12 @@ namespace TETRIS_BOARD {
     const int8_t RANDOM_VALUE_PIN = 19;
 
     const int8_t DISPLAY_GRID_SIZE = 12;
-} // namespace BOARD
+} // namespace TETRIS_BOARD
 
 namespace TETRIS_BLOCK_DIMENSIONS {
     const int8_t HEIGHT = 4;
     const int8_t WIDTH = 4;
-} // namespace SHAPE
+} // namespace TETRIS_BLOCK_DIMENSIONS
 
 namespace TETRIS_DIRECTION {
     const int8_t UP = 0;
@@ -30,6 +30,6 @@ namespace TETRIS_DIRECTION {
 
     const int8_t CW = 0;
     const int8_t CCW = 1;
-} // namespace MOVE
+} // namespace TETRIS_DIRECTION
 
 #endif // TETRIS_SETTINGS_H

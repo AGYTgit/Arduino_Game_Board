@@ -16,8 +16,12 @@ public:
     void draw(ST7789V& lcd, bool force_draw=false);
 
     void first_reveal();
-
     void generate_mines(uint8_t mine_count);
+
+    void reveal();
+
+    void move_selected_pos(uint8_t move_direction);
+    
 
 private:
     int16_t board_pos_x;
@@ -27,6 +31,8 @@ private:
 
     uint8_t selected_pos_x;
     uint8_t selected_pos_y;
+
+    void reveal(uint8_t pos_x, uint8_t pos_y);
 };
 
 #endif // MINESWEEPER_BOARD_H
