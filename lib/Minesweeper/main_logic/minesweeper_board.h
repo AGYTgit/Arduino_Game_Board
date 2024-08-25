@@ -32,6 +32,10 @@ private:
     uint8_t selected_pos_x;
     uint8_t selected_pos_y;
 
+    uint8_t life;
+
+    bool game_over;
+
     void reveal(uint8_t pos_x, uint8_t pos_y);
 };
 

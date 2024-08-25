@@ -13,6 +13,8 @@ namespace MINESWEEPER_BOARD {
     const uint8_t SPAWN_AREA_HEIGHT = 3;
     const uint8_t SPAWN_AREA_WIDTH = 3;
 
+    const uint8_t HP = 3;
+
     const int8_t RANDOM_VALUE_PIN = 19;
 } // namespace MINESWEEPER_BOARD
 

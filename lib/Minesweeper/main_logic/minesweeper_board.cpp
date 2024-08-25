@@ -1,7 +1,7 @@
 #include "minesweeper_board.h"
 
 Minesweeper_Board::Minesweeper_Board(int16_t _board_pos_x, int16_t _board_pos_y) :
-    board_pos_x(_board_pos_x), board_pos_y(_board_pos_y) {
+    board_pos_x(_board_pos_x), board_pos_y(_board_pos_y), life(MINESWEEPER_BOARD::HP), game_over(false) {
 
     // Initialize board matrix
     for (uint8_t y = 0; y < MINESWEEPER_BOARD::HEIGHT; y++) {
@@ -151,6 +151,10 @@ void Minesweeper_Board::generate_mines(uint8_t mine_count) {
 
 
 void Minesweeper_Board::reveal() {
+    if (game_over) {
+        return;
+    }
+
     this->reveal(this->selected_pos_y, this->selected_pos_x);
 }
 
@@ -164,6 +168,16 @@ void Minesweeper_Board::reveal(uint8_t pos_y, uint8_t pos_x) {
     // mark current square as revealed
     this->board_matrix[pos_y][pos_x] |= (1 << 7); // revealed bit
     this->board_matrix[pos_y][pos_x] |= (1 << 4); // update bit
+
+    // if mine, mark as exploded and subtract life
+    if ((this->board_matrix[pos_y][pos_x] & 0b1111) == 0b1001) {
+        if (this->life > 1) {
+            this->life--;
+            this->board_matrix[pos_y][pos_x] |= (1<<4);
+        } else {
+            this->game_over = true;
+        }
+    }
 
     // break recursion if the square is not a blank
     if ((this->board_matrix[pos_y][pos_x] & 0b1111) != 0) {
@@ -190,6 +204,10 @@ void Minesweeper_Board::reveal(uint8_t pos_y, uint8_t pos_x) {
 }
 
 void Minesweeper_Board::move_selected_pos(uint8_t move_direction) {
+    if (game_over) {
+        return;
+    }
+
     if (move_direction != MINESWEEPER_DIRECTION::UP && move_direction != MINESWEEPER_DIRECTION::DOWN && move_direction != MINESWEEPER_DIRECTION::LEFT && move_direction != MINESWEEPER_DIRECTION::RIGHT) {
         return;
     }
