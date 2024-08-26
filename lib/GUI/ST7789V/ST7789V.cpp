@@ -151,3 +151,23 @@ void ST7789V::fill(uint16_t color) {
         }
     }
 }
+
+
+void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, uint64_t bitmap, uint16_t color) {
+    if (scale == 0) {
+        return;
+    }
+
+    int8_t offset_x = (width - (10 * scale)) / 2;
+    int8_t offset_y = (height - (8 * scale)) / 2;
+
+    for (uint8_t y = 0; y < 8; y++) {
+        for (uint8_t x = 0; x < 8; x++) {
+            if ((bitmap >> (64 - ((y * 8) + x)) & 1) == 0) {
+                continue;
+            }
+
+            draw_rect(pos_x + (x * scale) + offset_x, pos_y + (y * scale) + offset_y, scale, scale, color);
+        }
+    }
+}

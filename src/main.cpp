@@ -4,6 +4,8 @@
 #include <Tetris.h>
 #include <Minesweeper.h>
 
+#include <font/my_font.h>
+
 
 ST7789V lcd = ST7789V();
 
@@ -176,8 +178,19 @@ void minesweeper_game() {
   bool first_reveal = true;
 
   if (true) { // setup
-    lcd.draw_rect(0,0,50,50,lcd.rgb(255,255,255));
-    board.draw(lcd, true);
+    lcd.draw_rect(0,0,16,16,lcd.rgb(255,255,255));
+    lcd.draw_char(0,0,16,16,2,CHARACTER_BITMAP[0].value,lcd.rgb(255,0,0));
+
+    lcd.draw_rect(0,32,16,16,lcd.rgb(255,255,255));
+    lcd.draw_char(0,32,16,16,4,CHARACTER_BITMAP[0].value,lcd.rgb(255,0,0));
+
+    lcd.draw_rect(32,0,16,16,lcd.rgb(255,255,255));
+    lcd.draw_char(32,0,16,16,2,CHARACTER_BITMAP[1].value,lcd.rgb(255,0,0));
+
+    lcd.draw_rect(32,32,16,16,lcd.rgb(255,255,255));
+    lcd.draw_char(32,32,16,16,4,CHARACTER_BITMAP[1].value,lcd.rgb(255,0,0));
+
+    // board.draw(lcd, true);
   }
 
   while (true) { // loop
