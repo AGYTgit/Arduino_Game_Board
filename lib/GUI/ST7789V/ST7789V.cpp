@@ -1,15 +1,19 @@
 #include "ST7789V.h"
 
-void ST7789V::setup_pins() {
-    // DDRD = DDRD | B11111100;
-    // DDRB = DDRB | B00000011;
-    // DDRC = DDRC | B00011111;
-    // PORTC = PORTC | B00011111;
+ST7789V::ST7789V() :
+    SBMFont8x8_size(8),
+    SBMFont8x8_length(93) {
 
-    DDRD = B11111111;
-    DDRC = DDRC | B00011111;
-    PORTC = PORTC | B00011111;
+    strcpy(SBMFont8x8_characters, "0123456789 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-=[]\\;',./!@#$%^&*()_+{}|:\"<>?");
+
+    uint8_t bitmap[SBMFont8x8_length][SBMFont8x8_size] = {
+        {0b00000000, 0b00111100, 0b01000110, 0b01001010, 0b01001010, 0b01010010, 0b01100010, 0b00111100}, // 0
+        {0b00000000, 0b00011000, 0b00111000, 0b01111000, 0b00011000, 0b00011000, 0b00011000, 0b01111110}, // 1
+        {0b00000000, 0b00111100, 0b01100110, 0b00000110, 0b00011100, 0b00110000, 0b01100110, 0b01111110}, // 2
+    };
+    memcpy(SBMFont8x8_character_bitmap, bitmap, SBMFont8x8_length*SBMFont8x8_size);
 }
+
 
 void ST7789V::LCD_write(uint8_t d) {
     digitalWrite(LCD_WR, LOW);
@@ -30,8 +34,18 @@ void ST7789V::LCD_data_write(uint8_t data) {
     LCD_write(data);
 }
 
+
 void ST7789V::Init() {
-    setup_pins();
+    // DDRD = DDRD | B11111100;
+    // DDRB = DDRB | B00000011;
+    // DDRC = DDRC | B00011111;
+    // PORTC = PORTC | B00011111;
+
+    DDRD = B11111111;
+    DDRC = DDRC | B00011111;
+    PORTC = PORTC | B00011111;
+
+
     digitalWrite(LCD_RST, HIGH);
     delay(5);
     digitalWrite(LCD_RST, LOW);
@@ -61,14 +75,6 @@ void ST7789V::Init() {
     LCD_command_write(0x2c);
 }
 
-uint16_t ST7789V::rgb(int r, int g, int b) {
-  uint16_t r5 = (r >> 3) & 0x1F;  // 5 bits
-  uint16_t g6 = (g >> 2) & 0x3F;  // 6 bits
-  uint16_t b5 = (b >> 3) & 0x1F;  // 5 bits
-
-  // Combine the bits into a single 16-bit value
-  return (r5 << 11) | (g6 << 5) | b5;
-}
 
 void ST7789V::set_address(int16_t y1, int16_t y2, int16_t x1, int16_t x2) {
     LCD_command_write(0x2a);
@@ -85,6 +91,17 @@ void ST7789V::set_address(int16_t y1, int16_t y2, int16_t x1, int16_t x2) {
 
     LCD_command_write(0x2c);
 }
+
+
+uint16_t ST7789V::rgb(int r, int g, int b) {
+  uint16_t r5 = (r >> 3) & 0x1F;  // 5 bits
+  uint16_t g6 = (g >> 2) & 0x3F;  // 6 bits
+  uint16_t b5 = (b >> 3) & 0x1F;  // 5 bits
+
+  // Combine the bits into a single 16-bit value
+  return (r5 << 11) | (g6 << 5) | b5;
+}
+
 
 void ST7789V::draw_pixel(int16_t x, int16_t y, uint16_t color) {
     set_address(x, x, y, y);
@@ -153,17 +170,25 @@ void ST7789V::fill(uint16_t color) {
 }
 
 
-void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, uint64_t bitmap, uint16_t color) {
+void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, uint8_t character, uint16_t color) {
     if (scale == 0) {
         return;
+    }
+
+    uint8_t char_index;
+    for (uint8_t i = 0; i < this->SBMFont8x8_length; i++) {
+        if (this->SBMFont8x8_characters[i] == character) {
+            char_index = i;
+            break;
+        }
     }
 
     int8_t offset_x = (width - (10 * scale)) / 2;
     int8_t offset_y = (height - (8 * scale)) / 2;
 
-    for (uint8_t y = 0; y < 8; y++) {
-        for (uint8_t x = 0; x < 8; x++) {
-            if ((bitmap >> (64 - ((y * 8) + x)) & 1) == 0) {
+    for (uint8_t y = 0; y < this->SBMFont8x8_size; y++) {
+        for (uint8_t x = 0; x < this->SBMFont8x8_size; x++) {
+            if (((this->SBMFont8x8_character_bitmap[char_index][y] >> x) & 1) == 0) {
                 continue;
             }
 
