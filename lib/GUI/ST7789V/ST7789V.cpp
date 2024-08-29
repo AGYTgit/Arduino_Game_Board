@@ -1,26 +1,13 @@
 #include "ST7789V.h"
 
-ST7789V::ST7789V() :
-    SBMFont8x8_size(8),
-    SBMFont8x8_length(93) {
-
-    strcpy(SBMFont8x8_characters, "0123456789 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-=[]\\;',./!@#$%^&*()_+{}|:\"<>?");
-
-    uint8_t bitmap[SBMFont8x8_length][SBMFont8x8_size] = {
-        {0b00000000, 0b00111100, 0b01000110, 0b01001010, 0b01001010, 0b01010010, 0b01100010, 0b00111100}, // 0
-        {0b00000000, 0b00011000, 0b00111000, 0b01111000, 0b00011000, 0b00011000, 0b00011000, 0b01111110}, // 1
-        {0b00000000, 0b00111100, 0b01100110, 0b00000110, 0b00011100, 0b00110000, 0b01100110, 0b01111110}, // 2
-    };
-    memcpy(SBMFont8x8_character_bitmap, bitmap, SBMFont8x8_length*SBMFont8x8_size);
-}
-
-
 void ST7789V::LCD_write(uint8_t d) {
     digitalWrite(LCD_WR, LOW);
-    // PORTD = (PORTD & B00000011) | ((d) & B11111100);
-    // PORTB = (PORTB & B11111100) | ((d) & B00000011);
+
+    // PORTD = (PORTD & 0b00000011) | ((d) & 0b11111100);
+    // PORTB = (PORTB & 0b11111100) | ((d) & 0b00000011);
 
     PORTD = d;
+    
     digitalWrite(LCD_WR, HIGH);
 }
 
@@ -63,7 +50,7 @@ void ST7789V::Init() {
     LCD_data_write(0x00);
     
     LCD_command_write(0x36);
-    LCD_data_write(B0000000);
+    LCD_data_write(0b0000000);
 
     LCD_command_write(0x3A);
     LCD_data_write(0x55);
@@ -183,16 +170,23 @@ void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t h
         }
     }
 
-    int8_t offset_x = (width - (10 * scale)) / 2;
+    int8_t offset_x = (width - (8 * scale)) / 2;
     int8_t offset_y = (height - (8 * scale)) / 2;
 
     for (uint8_t y = 0; y < this->SBMFont8x8_size; y++) {
         for (uint8_t x = 0; x < this->SBMFont8x8_size; x++) {
-            if (((this->SBMFont8x8_character_bitmap[char_index][y] >> x) & 1) == 0) {
+            if (((this->SBMFont8x8_character_bitmap[char_index][y] >> ((this->SBMFont8x8_size - 1) - x)) & 1) == 0) {
                 continue;
             }
 
             draw_rect(pos_x + (x * scale) + offset_x, pos_y + (y * scale) + offset_y, scale, scale, color);
         }
+    }
+}
+
+void ST7789V::draw_text(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, uint8_t spacing, const uint8_t* text, uint16_t color) {
+    for (const char* c = text; *c != '\0'; c++) {
+        draw_char(pos_x, pos_y, width, height, scale, *c, color);
+        pos_x += 8 * scale + spacing;
     }
 }

@@ -176,34 +176,64 @@ void minesweeper_game() {
   bool first_reveal = true;
 
   if (true) { // setup
-    lcd.draw_rect(0,0,16,16,lcd.rgb(255,255,255));
-    lcd.draw_char(0,0,16,16,1,'0',lcd.rgb(255,0,0));
+    char c[10] = "0123456789";
+    char c1[10] = "ABCDEFGHIJ";
+    char c2[10] = "KLMNOPQRST";
+    char c3[10] = "UVWXYZ";
 
-    lcd.draw_rect(0,32,16,16,lcd.rgb(255,255,255));
-    lcd.draw_char(0,32,16,16,2,'0',lcd.rgb(255,0,0));
-
-    lcd.draw_rect(0,64,16,16,lcd.rgb(255,255,255));
-    lcd.draw_char(0,64,16,16,4,'0',lcd.rgb(255,0,0));
-
-
-    lcd.draw_rect(32,0,16,16,lcd.rgb(255,255,255));
-    lcd.draw_char(32,0,16,16,1,'1',lcd.rgb(255,0,0));
-
-    lcd.draw_rect(32,32,16,16,lcd.rgb(255,255,255));
-    lcd.draw_char(32,32,16,16,2,'1',lcd.rgb(255,0,0));
-
-    lcd.draw_rect(32,64,16,16,lcd.rgb(255,255,255));
-    lcd.draw_char(32,64,16,16,4,'1',lcd.rgb(255,0,0));
+    for (uint8_t i = 0; i < 10; i++) {
+      lcd.draw_rect(i*24,00,16,16,lcd.rgb(255,255,255));
+      lcd.draw_char(i*24,00,16,16,2,toLowerCase(c[i]),lcd.rgb(255,0,0));
 
 
-    lcd.draw_rect(64,0,16,16,lcd.rgb(255,255,255));
-    lcd.draw_char(64,0,16,16,1,'2',lcd.rgb(255,0,0));
 
-    lcd.draw_rect(64,32,16,16,lcd.rgb(255,255,255));
-    lcd.draw_char(64,32,16,16,2,'2',lcd.rgb(255,0,0));
+      lcd.draw_rect(i*24,40,16,16,lcd.rgb(255,255,255));
+      lcd.draw_char(i*24,40,16,16,2,toLowerCase(c1[i]),lcd.rgb(255,0,0));
 
-    lcd.draw_rect(64,64,16,16,lcd.rgb(255,255,255));
-    lcd.draw_char(64,64,16,16,4,'2',lcd.rgb(255,0,0));
+      lcd.draw_rect(i*24,60,16,16,lcd.rgb(255,255,255));
+      lcd.draw_char(i*24,60,16,16,2,toLowerCase(c2[i]),lcd.rgb(255,0,0));
+      if (i < 6) {
+        lcd.draw_rect(i*24,80,16,16,lcd.rgb(255,255,255));
+        lcd.draw_char(i*24,80,16,16,2,toLowerCase(c3[i]),lcd.rgb(255,0,0));
+      }
+
+
+
+      lcd.draw_rect(i*24,120,16,16,lcd.rgb(255,255,255));
+      lcd.draw_char(i*24,120,16,16,2,c1[i],lcd.rgb(255,0,0));
+
+      lcd.draw_rect(i*24,140,16,16,lcd.rgb(255,255,255));
+      lcd.draw_char(i*24,140,16,16,2,c2[i],lcd.rgb(255,0,0));
+      if (i < 6) {
+        lcd.draw_rect(i*24,160,16,16,lcd.rgb(255,255,255));
+        lcd.draw_char(i*24,160,16,16,2,c3[i],lcd.rgb(255,0,0));
+      }
+    }
+  
+  lcd.draw_rect(0,200,240,16,lcd.rgb(255,255,255));
+  lcd.draw_rect(0,218,240,16,lcd.rgb(255,255,255));
+  lcd.draw_rect(0,236,240,16,lcd.rgb(255,255,255));
+  lcd.draw_text(0,200,16,16,2,0,"The quick brown", lcd.rgb(255,0,0));
+  lcd.draw_text(0,218,16,16,2,0,"fox jumps over", lcd.rgb(255,0,0));
+  lcd.draw_text(0,236,16,16,2,0,"the lazy dog", lcd.rgb(255,0,0));
+
+    // lcd.draw_rect(32,0,16,16,lcd.rgb(255,255,255));
+    // lcd.draw_char(32,0,16,16,1,'1',lcd.rgb(255,0,0));
+
+    // lcd.draw_rect(32,32,16,16,lcd.rgb(255,255,255));
+    // lcd.draw_char(32,32,16,16,2,'1',lcd.rgb(255,0,0));
+
+    // lcd.draw_rect(32,64,16,16,lcd.rgb(255,255,255));
+    // lcd.draw_char(32,64,16,16,4,'1',lcd.rgb(255,0,0));
+
+    // lcd.draw_rect(64,0,16,16,lcd.rgb(255,255,255));
+    // lcd.draw_char(64,0,16,16,1,'2',lcd.rgb(255,0,0));
+
+    // lcd.draw_rect(64,32,16,16,lcd.rgb(255,255,255));
+    // lcd.draw_char(64,32,16,16,2,'2',lcd.rgb(255,0,0));
+
+    // lcd.draw_rect(64,64,16,16,lcd.rgb(255,255,255));
+    // lcd.draw_char(64,64,16,16,4,'2',lcd.rgb(255,0,0));
 
     // board.draw(lcd, true);
   }
