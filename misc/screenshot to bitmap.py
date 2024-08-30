@@ -1,18 +1,18 @@
 from PIL import Image
 
 
-character_amount = 26
-scale = 2
+character_amount = 30
+scale = 1
 
 
-img = Image.open('Screenshot 2024-08-29 172526.png')
+img = Image.open('new_project.png')
 
 width, height = img.size
 
 x2, y2 = -1, -1
 
 for i in range(character_amount):
-    for y in range(16):
+    for y in range(8):
         y2 += 1
         if y2 % scale != 0:
             continue

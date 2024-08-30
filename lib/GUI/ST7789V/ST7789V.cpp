@@ -184,7 +184,7 @@ void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t h
     }
 }
 
-void ST7789V::draw_text(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, uint8_t spacing, const uint8_t* text, uint16_t color) {
+void ST7789V::draw_text(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, int8_t spacing, const uint8_t* text, uint16_t color) {
     for (const char* c = text; *c != '\0'; c++) {
         draw_char(pos_x, pos_y, width, height, scale, *c, color);
         pos_x += 8 * scale + spacing;

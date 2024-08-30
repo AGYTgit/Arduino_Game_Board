@@ -213,9 +213,16 @@ void minesweeper_game() {
   lcd.draw_rect(0,200,240,16,lcd.rgb(255,255,255));
   lcd.draw_rect(0,218,240,16,lcd.rgb(255,255,255));
   lcd.draw_rect(0,236,240,16,lcd.rgb(255,255,255));
-  lcd.draw_text(0,200,16,16,2,0,"The quick brown", lcd.rgb(255,0,0));
-  lcd.draw_text(0,218,16,16,2,0,"fox jumps over", lcd.rgb(255,0,0));
-  lcd.draw_text(0,236,16,16,2,0,"the lazy dog", lcd.rgb(255,0,0));
+  lcd.draw_text(0,200,16,16,2,0,"-=[]\\;',./", lcd.rgb(255,0,0));
+  lcd.draw_text(0,218,16,16,2,0,"!@#$%^&*()", lcd.rgb(255,0,0));
+  lcd.draw_text(0,236,16,16,2,0,"_+{}|:\"<>?", lcd.rgb(255,0,0));
+
+  lcd.draw_rect(0,264,240,16,lcd.rgb(255,255,255));
+  lcd.draw_rect(0,282,240,16,lcd.rgb(255,255,255));
+  lcd.draw_rect(0,300,240,16,lcd.rgb(255,255,255));
+  lcd.draw_text(0,264,16,16,2,0,"The quick brown", lcd.rgb(255,0,0));
+  lcd.draw_text(0,282,16,16,2,0,"fox jumps over", lcd.rgb(255,0,0));
+  lcd.draw_text(0,300,16,16,2,0,"the lazy dog.", lcd.rgb(255,0,0));
 
     // lcd.draw_rect(32,0,16,16,lcd.rgb(255,255,255));
     // lcd.draw_char(32,0,16,16,1,'1',lcd.rgb(255,0,0));
