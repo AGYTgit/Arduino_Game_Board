@@ -157,7 +157,7 @@ void ST7789V::fill(uint16_t color) {
 }
 
 
-void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, uint8_t character, uint16_t color) {
+void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, char character, uint16_t color) {
     if (scale == 0) {
         return;
     }
@@ -184,9 +184,18 @@ void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t h
     }
 }
 
-void ST7789V::draw_text(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, int8_t spacing, const uint8_t* text, uint16_t color) {
+void ST7789V::draw_text(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, int8_t spacing, const char* text, uint16_t color) {
+    uint8_t char_count = 0;
+    char* temp = (char*)text;
+    while (*temp != '\0') {
+        char_count++;
+        temp++;
+    }
+
+    int8_t pos_x_offset = ((char_count - 1) * (SBMFont8x8_size * scale + spacing)) / 2;
+
     for (const char* c = text; *c != '\0'; c++) {
-        draw_char(pos_x, pos_y, width, height, scale, *c, color);
-        pos_x += 8 * scale + spacing;
+        draw_char(pos_x - pos_x_offset, pos_y, width, height, scale, *c, color);
+        pos_x += SBMFont8x8_size * scale + spacing;
     }
 }

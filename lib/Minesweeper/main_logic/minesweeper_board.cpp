@@ -27,22 +27,28 @@ void Minesweeper_Board::draw(ST7789V& lcd, bool force_draw) {
                 }
             }
 
+            uint8_t pos_x = board_pos_x + x * MINESWEEPER_BOARD::GRID_SIZE;
+            uint8_t pos_y = board_pos_y + y * MINESWEEPER_BOARD::GRID_SIZE;
+            uint8_t grid_size = MINESWEEPER_BOARD::GRID_SIZE;
+
             if (((board_matrix[y][x] >> 7) & 1) == 1) { // draw revealed squares
                 if ((board_matrix[y][x] & 0b1111) == 0) { // draw blank
-                    lcd.draw_rect(board_pos_x + x * MINESWEEPER_BOARD::GRID_SIZE, board_pos_y + y * MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, lcd.rgb(100,100,100));
-                    lcd.draw_frame(board_pos_x + x * MINESWEEPER_BOARD::GRID_SIZE, board_pos_y + y * MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, 1, lcd.rgb(75,75,75));
+                    lcd.draw_rect(pos_x, pos_y, grid_size, grid_size, lcd.rgb(100,100,100));
+                    lcd.draw_frame(pos_x, pos_y, grid_size, grid_size, 1, lcd.rgb(75,75,75));
                 } else if ((board_matrix[y][x] & 0b1111) == 0b1001) { // draw mine
-                    lcd.draw_rect(board_pos_x + x * MINESWEEPER_BOARD::GRID_SIZE, board_pos_y + y * MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, lcd.rgb(0,0,0));
+                    lcd.draw_rect(pos_x, pos_y, grid_size, grid_size, lcd.rgb(0,0,0));
                 } else { // draw number
-                    lcd.draw_rect(board_pos_x + x * MINESWEEPER_BOARD::GRID_SIZE, board_pos_y + y * MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, lcd.rgb(0,150 - ((board_matrix[y][x] & 0b1111) * 10),255 - ((board_matrix[y][x] & 0b1111) * 28)));
+                    lcd.draw_rect(pos_x, pos_y, grid_size, grid_size, lcd.rgb(100,100,100));
+                    lcd.draw_frame(pos_x, pos_y, grid_size, grid_size, 1, lcd.rgb(75,0,75));
+                    lcd.draw_char(pos_x, pos_y, grid_size, grid_size, 1, lcd.SBMFont8x8_characters[board_matrix[y][x] & 0b1111], lcd.rgb(0,150,255)); // sometimes crashes arduino
                 }
             } else if (((board_matrix[y][x] >> 7) & 1) == 0) { // draw unrevealed squares
                 if (((board_matrix[y][x] >> 5) & 1) == 0) { // draw unrevealed/unflagged/unexploded
-                    lcd.draw_rect(board_pos_x + x * MINESWEEPER_BOARD::GRID_SIZE, board_pos_y + y * MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, lcd.rgb(150,150,150));
+                    lcd.draw_rect(pos_x, pos_y, grid_size, grid_size, lcd.rgb(150,150,150));
                 } else if (((board_matrix[y][x] >> 6) & 1) == 1) { // draw flagged squares
-                    lcd.draw_rect(board_pos_x + x * MINESWEEPER_BOARD::GRID_SIZE, board_pos_y + y * MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, lcd.rgb(255,0,0));
+                    lcd.draw_rect(pos_x, pos_y, grid_size, grid_size, lcd.rgb(255,0,0));
                 } else if (((board_matrix[y][x] >> 5) & 1) == 1) { // draw exploded squares
-                    lcd.draw_rect(board_pos_x + x * MINESWEEPER_BOARD::GRID_SIZE, board_pos_y + y * MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, MINESWEEPER_BOARD::GRID_SIZE, lcd.rgb(255,0,255));
+                    lcd.draw_rect(pos_x, pos_y, grid_size, grid_size, lcd.rgb(255,0,255));
                 }
             }
 
