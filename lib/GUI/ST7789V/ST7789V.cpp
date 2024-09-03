@@ -163,8 +163,8 @@ void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t h
     }
 
     uint8_t char_index;
-    for (uint8_t i = 0; i < this->SBMFont8x8_length; i++) {
-        if (this->SBMFont8x8_characters[i] == character) {
+    for (uint8_t i = 0; i < SBMFont8x8_length; i++) {
+        if (SBMFont8x8_characters[i] == character) {
             char_index = i;
             break;
         }
@@ -173,9 +173,9 @@ void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t h
     int8_t offset_x = (width - (8 * scale)) / 2;
     int8_t offset_y = (height - (8 * scale)) / 2;
 
-    for (uint8_t y = 0; y < this->SBMFont8x8_size; y++) {
-        for (uint8_t x = 0; x < this->SBMFont8x8_size; x++) {
-            if (((this->SBMFont8x8_character_bitmap[char_index][y] >> ((this->SBMFont8x8_size - 1) - x)) & 1) == 0) {
+    for (uint8_t y = 0; y < SBMFont8x8_size; y++) {
+        for (uint8_t x = 0; x < SBMFont8x8_size; x++) {
+            if (((SBMFont8x8_character_bitmap[char_index][y] >> ((SBMFont8x8_size - 1) - x)) & 1) == 0) {
                 continue;
             }
 
@@ -184,9 +184,9 @@ void ST7789V::draw_char(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t h
     }
 }
 
-void ST7789V::draw_text(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, int8_t spacing, const char* text, uint16_t color) {
+void ST7789V::draw_text(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, int8_t spacing, char* text, uint16_t color) {
     uint8_t char_count = 0;
-    char* temp = (char*)text;
+    char* temp = text;
     while (*temp != '\0') {
         char_count++;
         temp++;
@@ -194,7 +194,7 @@ void ST7789V::draw_text(int16_t pos_x, int16_t pos_y, uint16_t width, uint16_t h
 
     int8_t pos_x_offset = ((char_count - 1) * (SBMFont8x8_size * scale + spacing)) / 2;
 
-    for (const char* c = text; *c != '\0'; c++) {
+    for (char* c = text; *c != '\0'; c++) {
         draw_char(pos_x - pos_x_offset, pos_y, width, height, scale, *c, color);
         pos_x += SBMFont8x8_size * scale + spacing;
     }

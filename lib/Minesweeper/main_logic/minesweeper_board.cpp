@@ -40,7 +40,7 @@ void Minesweeper_Board::draw(ST7789V& lcd, bool force_draw) {
                 } else { // draw number
                     lcd.draw_rect(pos_x, pos_y, grid_size, grid_size, lcd.rgb(100,100,100));
                     lcd.draw_frame(pos_x, pos_y, grid_size, grid_size, 1, lcd.rgb(75,0,75));
-                    lcd.draw_char(pos_x, pos_y, grid_size, grid_size, 1, lcd.SBMFont8x8_characters[board_matrix[y][x] & 0b1111], lcd.rgb(0,150,255)); // sometimes crashes arduino
+                    lcd.draw_char(pos_x, pos_y, grid_size, grid_size, 1, SBMFont8x8_characters[board_matrix[y][x] & 0b1111], lcd.rgb(0,150,255)); // sometimes crashes arduino
                 }
             } else if (((board_matrix[y][x] >> 7) & 1) == 0) { // draw unrevealed squares
                 if (((board_matrix[y][x] >> 5) & 1) == 0) { // draw unrevealed/unflagged/unexploded

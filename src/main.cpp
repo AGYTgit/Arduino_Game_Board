@@ -326,10 +326,10 @@ void setup() {
   
   button_grid.init();
 
-  // game_select_menu();
+  game_select_menu();
 }
 
 void loop() {
-  minesweeper_game();
-  // tetris_game();
+  // minesweeper_menu();
+  // tetris_menu();
 }

@@ -8,7 +8,7 @@ namespace MINESWEEPER_BOARD {
 
     const int8_t GRID_SIZE = 16;
 
-    const uint8_t MINE_COUNT = 25;
+    const uint8_t MINE_COUNT = 50;
 
     const uint8_t SPAWN_AREA_HEIGHT = 3;
     const uint8_t SPAWN_AREA_WIDTH = 3;
