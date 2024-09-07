@@ -1,0 +1,59 @@
+{
+  "configurations": [
+    {
+      "name": "windows-gcc-x86",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "c:/Users/bubon/OneDrive/Documents/GitHub/esp32-Tetris/arduino_game_board/include",
+        "c:/Users/bubon/OneDrive/Documents/GitHub/esp32-Tetris/arduino_game_board/src",
+        "C:/Users/bubon/.platformio/packages/framework-arduino-avr/cores/arduino",
+        "C:/Users/bubon/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs",
+        "c:/Users/bubon/OneDrive/Documents/GitHub/esp32-Tetris/arduino_game_board/lib/VS7789V",
+        "C:/Users/bubon/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+        "C:/Users/bubon/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+        "C:/Users/bubon/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+        "C:/Users/bubon/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+        "C:/Users/bubon/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+        ""
+      ],
+      "browse": {
+        "limitSymbolsToIncludedHeaders": true,
+        "path": [
+          "c:/Users/bubon/OneDrive/Documents/GitHub/arduino_game_board/include",
+          "c:/Users/bubon/OneDrive/Documents/GitHub/arduino_game_board/src",
+          "c:/Users/bubon/OneDrive/Documents/GitHub/arduino_game_board/lib/UI",
+          "c:/Users/bubon/OneDrive/Documents/GitHub/arduino_game_board/lib/Tetris",
+          "c:/Users/bubon/OneDrive/Documents/GitHub/arduino_game_board/lib/Minesweeper",
+          "c:/Users/bubon/OneDrive/Documents/GitHub/arduino_game_board/lib/GUI",
+          "C:/Users/bubon/.platformio/packages/framework-arduino-avr/cores/arduino",
+          "C:/Users/bubon/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs",
+          "c:/Users/bubon/OneDrive/Documents/GitHub/arduino_game_board/.pio/libdeps/nanoatmega328/Unity/src",
+          "C:/Users/bubon/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+          "C:/Users/bubon/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+          "C:/Users/bubon/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+          "C:/Users/bubon/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+          "C:/Users/bubon/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+          ""
+        ]
+      },
+      "defines": [
+        "PLATFORMIO=60115",
+        "ARDUINO_AVR_NANO",
+        "F_CPU=16000000L",
+        "ARDUINO_ARCH_AVR",
+        "ARDUINO=10808",
+        "__AVR_ATmega328P__",
+        ""
+      ],
+      "cStandard": "gnu11",
+      "cppStandard": "gnu++11",
+      "compilerPath": "C:/Users/bubon/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
+      "compilerArgs": [
+        "-mmcu=atmega328p",
+        ""
+      ],
+      "intelliSenseMode": "windows-gcc-x86"
+    }
+  ],
+  "version": 4
+}
