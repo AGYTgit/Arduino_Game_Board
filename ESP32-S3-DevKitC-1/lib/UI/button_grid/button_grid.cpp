@@ -34,14 +34,18 @@ void Button_Grid::init() {
 uint8_t Button_Grid::scan(uint8_t scan_delay) {
     for (uint8_t i = 0; i < (button_grid_dimensions >> 4); i++) {
         digitalWrite(i + this->input_pin_offset, HIGH);
+        Serial.println(i + this->input_pin_offset); //
         for (uint8_t ip = 1; ip < (button_grid_dimensions >> 4); ip++) {
             digitalWrite(((i + ip) % (button_grid_dimensions >> 4)) + this->input_pin_offset, LOW);
+            Serial.println(((i + ip) % (button_grid_dimensions >> 4)) + this->input_pin_offset); //
         }
 
         for (uint8_t j = 0; j < (button_grid_dimensions & 0x0F); j++) {
             digitalWrite(j + this->output_pin_offset, LOW);
+            Serial.println(j + this->output_pin_offset); //
             for (uint8_t jp = 1; jp < (button_grid_dimensions & 0x0F); jp++) {
                 digitalWrite(((j + jp) % (button_grid_dimensions & 0x0F)) + this->output_pin_offset, HIGH);
+                Serial.println(((j + jp) % (button_grid_dimensions & 0x0F)) + this->output_pin_offset); //
             }
 
             if (digitalRead(i + this->input_pin_offset) == LOW && this->button_pressed[j][i]) {
