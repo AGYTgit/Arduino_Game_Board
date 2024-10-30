@@ -2,7 +2,6 @@
 #include <gui.h>
 #include <ui.h>
 #include <Tetris.h>
-#include <Minesweeper.h>
 
 
 ST7789V lcd = ST7789V();
@@ -170,106 +169,6 @@ void tetris_menu() {
 }
 
 
-void minesweeper_game() {
-  Minesweeper_Board board = Minesweeper_Board(0, 0);
-
-  bool first_reveal = true;
-
-  if (true) { // setup
-    board.draw(lcd, true);
-  }
-
-  while (true) { // loop
-    switch (button_grid.scan()) {
-      case 0xFF:
-        break;
-      case 0x10:
-        board.move_selected_pos(MINESWEEPER_DIRECTION::LEFT);
-        board.draw(lcd);
-        break;
-      case 0x11:
-        board.move_selected_pos(MINESWEEPER_DIRECTION::DOWN);
-        board.draw(lcd);
-        break;
-      case 0x12:
-        board.move_selected_pos(MINESWEEPER_DIRECTION::UP);
-        board.draw(lcd);
-        break;
-      case 0x13:
-        board.move_selected_pos(MINESWEEPER_DIRECTION::RIGHT);
-        board.draw(lcd);
-        break;
-      case 0x00:
-        break;
-      case 0x01:
-        if (first_reveal) {
-          first_reveal = false;
-          board.first_reveal();
-        } else {
-          board.reveal();
-        }
-        board.draw(lcd);
-        break;
-      case 0x02:
-        lcd.fill();
-        return;
-        break;
-      case 0x03:
-        break;
-    }
-  }
-}
-
-void minesweeper_menu() {
-  Menu m = Menu(0x13, lcd.rgb(0,0,0));
-
-  if (true) { // setup
-    m.init();
-
-    m.add_button(lcd, 0, 0, 70, 50, 100, 50, (char*)"play", lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
-    m.add_button(lcd, 0, 1, 70, 120, 100, 50, (char*)"[]", lcd.rgb(0,255,255), 2, lcd.rgb(255,255,255));
-    m.add_button(lcd, 0, 2, 70, 190, 100, 50, (char*)"exit", lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
-
-    m.draw();
-  }
-
-  while (true) { // loop
-    switch (button_grid.scan()) {
-      case 0xFF:
-        break;
-      case 0x10:
-        m.move(2);
-        break;
-      case 0x11:
-        m.move(1);
-        break;
-      case 0x12:
-        m.move(0);
-        break;
-      case 0x13:
-        m.move(3);
-        break;
-      case 0x02:
-        switch (m.get_position()) {
-          case 0x00:
-            m.undraw();
-            minesweeper_game();
-            m.draw();
-            break;
-          case 0x01:
-            lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,255,255));
-            break;
-          case 0x02:
-            m.undraw();
-            return;
-            break;
-        }
-        break;
-    }
-  }
-}
-
-
 void game_select_menu() {
   Menu m = Menu(0x12, lcd.rgb(0,0,0));
 
@@ -305,11 +204,6 @@ void game_select_menu() {
             tetris_menu();
             m.draw();
             break;
-          case 0x01:
-            m.undraw();
-            minesweeper_menu();
-            m.draw();
-            break;
         }
         break;
     }
@@ -330,6 +224,5 @@ void setup() {
 }
 
 void loop() {
-  // minesweeper_menu();
-  // tetris_menu();
+
 }
