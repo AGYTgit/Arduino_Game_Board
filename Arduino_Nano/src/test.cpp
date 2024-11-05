@@ -1,11 +1,13 @@
+// #include <Arduino.h>
 
+// int main(void) {
+// 	init();
+	
+// 	Serial.begin(115200);
 
-// void setup() {
-//     // Serial.begin(115200);
-//     // Serial.println(1);
-// }
-
-
-// void loop() {
-    
+// 	while (true) {
+// 		Serial.println(millis());
+// 	}
+        
+// 	return 0;
 // }
