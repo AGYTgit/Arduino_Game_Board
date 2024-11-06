@@ -31,17 +31,24 @@ void Button_Grid::init() {
     }
 }
 
-uint8_t Button_Grid::scan(uint8_t scan_delay) {
-    for (uint8_t i = 0; i < (button_grid_dimensions >> 4); i++) {
+uint8_t* Button_Grid::scan(uint8_t scan_delay) {
+    uint8_t input_pin_count = this->button_grid_dimensions >> 4;
+    uint8_t output_pin_count = this->button_grid_dimensions && 0x0F;
+
+    this->scan_return_value = new uint8_t[input_pin_count + output_pin_count + 1];
+    uint8_t pressed_button_count = 0;
+    this->scan_return_value[0] = 0;
+
+    for (uint8_t i = 0; i < input_pin_count; i++) {
         digitalWrite(i + this->input_pin_offset, HIGH);
-        for (uint8_t ip = 1; ip < (button_grid_dimensions >> 4); ip++) {
-            digitalWrite(((i + ip) % (button_grid_dimensions >> 4)) + this->input_pin_offset, LOW);
+        for (uint8_t ip = 1; ip < input_pin_count; ip++) {
+            digitalWrite(((i + ip) % input_pin_count) + this->input_pin_offset, LOW);
         }
 
-        for (uint8_t j = 0; j < (button_grid_dimensions & 0x0F); j++) {
+        for (uint8_t j = 0; j < output_pin_count; j++) {
             digitalWrite(j + this->output_pin_offset, LOW);
-            for (uint8_t jp = 1; jp < (button_grid_dimensions & 0x0F); jp++) {
-                digitalWrite(((j + jp) % (button_grid_dimensions & 0x0F)) + this->output_pin_offset, HIGH);
+            for (uint8_t jp = 1; jp < output_pin_count; jp++) {
+                digitalWrite(((j + jp) % output_pin_count) + this->output_pin_offset, HIGH);
             }
 
             if (digitalRead(i + this->input_pin_offset) == LOW && this->button_pressed[j][i]) {
@@ -49,10 +56,13 @@ uint8_t Button_Grid::scan(uint8_t scan_delay) {
             } else if (digitalRead(i + this->input_pin_offset) != LOW && !this->button_pressed[j][i]) {
                 this->button_pressed[j][i] = true;
 
-                return (i << 4) | j;
+                Serial.println((i << 4) | j, HEX);
+
+                pressed_button_count++;
+                this->scan_return_value[pressed_button_count] = (i << 4) | j;
             }
             delay(scan_delay);
         }
     }
-    return 0xFF;
+    return this->scan_return_value;
 }
