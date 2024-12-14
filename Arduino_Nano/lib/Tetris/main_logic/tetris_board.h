@@ -37,7 +37,7 @@ public:
 private:
     int16_t board_pos_x;
     int16_t board_pos_y;
-    // 3D array to store state of each grid block (present, future)
+    // 3D array to store state of each grid block (present, next update)
     int8_t board_matrix[TETRIS_BOARD::HEIGHT][TETRIS_BOARD::WIDTH][TETRIS_BOARD::DEPTH];
 
     int8_t block_codes[TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT];

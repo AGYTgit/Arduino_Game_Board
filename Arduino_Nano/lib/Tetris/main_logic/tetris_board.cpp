@@ -29,6 +29,7 @@ void Tetris_Board::draw(ST7789V& lcd, bool force_draw) {
                     lcd.draw_frame(board_pos_x + j * TETRIS_BOARD::GRID_SIZE, board_pos_y + i * TETRIS_BOARD::GRID_SIZE, TETRIS_BOARD::GRID_SIZE, TETRIS_BOARD::GRID_SIZE, 1, lcd.rgb(100,100,100));
                 } else {
                     lcd.draw_rect(board_pos_x + j * TETRIS_BOARD::GRID_SIZE, board_pos_y + i * TETRIS_BOARD::GRID_SIZE, TETRIS_BOARD::GRID_SIZE, TETRIS_BOARD::GRID_SIZE, BLOCK_DATA[board_matrix[i][j][1]].COLOR);
+                    lcd.draw_frame(board_pos_x + j * TETRIS_BOARD::GRID_SIZE, board_pos_y + i * TETRIS_BOARD::GRID_SIZE, TETRIS_BOARD::GRID_SIZE, TETRIS_BOARD::GRID_SIZE, 1, BLOCK_DATA[board_matrix[i][j][1]].HIGHLIGHT_COLOR);
                 }
                 board_matrix[i][j][0] = board_matrix[i][j][1];
             }
@@ -289,6 +290,7 @@ void Tetris_Board::display_future_blocks(ST7789V& lcd) {
                 }
 
                 lcd.draw_rect(this->display_pos_x + (TETRIS_BOARD::DISPLAY_GRID_SIZE * x), this->display_pos_y + (TETRIS_BOARD::DISPLAY_GRID_SIZE * y) + (TETRIS_BOARD::DISPLAY_GRID_SIZE * i * (TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT - 1)), TETRIS_BOARD::DISPLAY_GRID_SIZE, TETRIS_BOARD::DISPLAY_GRID_SIZE, BLOCK_DATA[block_code].COLOR);
+                lcd.draw_frame(this->display_pos_x + (TETRIS_BOARD::DISPLAY_GRID_SIZE * x), this->display_pos_y + (TETRIS_BOARD::DISPLAY_GRID_SIZE * y) + (TETRIS_BOARD::DISPLAY_GRID_SIZE * i * (TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT - 1)), TETRIS_BOARD::DISPLAY_GRID_SIZE, TETRIS_BOARD::DISPLAY_GRID_SIZE, 1, BLOCK_DATA[block_code].HIGHLIGHT_COLOR);
             }
         }
     }
@@ -306,6 +308,7 @@ void Tetris_Board::display_hold_block(ST7789V& lcd) {
             }
 
             lcd.draw_rect(this->display_pos_x + (TETRIS_BOARD::DISPLAY_GRID_SIZE * x), this->display_pos_y + (TETRIS_BOARD::DISPLAY_GRID_SIZE * y) + (TETRIS_BOARD::DISPLAY_GRID_SIZE * (TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT - 1)) + (TETRIS_BOARD::DISPLAY_GRID_SIZE * 4 * TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT) + 16 - (12 * 4), TETRIS_BOARD::DISPLAY_GRID_SIZE, TETRIS_BOARD::DISPLAY_GRID_SIZE, BLOCK_DATA[block_code].COLOR);
+            lcd.draw_frame(this->display_pos_x + (TETRIS_BOARD::DISPLAY_GRID_SIZE * x), this->display_pos_y + (TETRIS_BOARD::DISPLAY_GRID_SIZE * y) + (TETRIS_BOARD::DISPLAY_GRID_SIZE * (TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT - 1)) + (TETRIS_BOARD::DISPLAY_GRID_SIZE * 4 * TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT) + 16 - (12 * 4), TETRIS_BOARD::DISPLAY_GRID_SIZE, TETRIS_BOARD::DISPLAY_GRID_SIZE, 1, BLOCK_DATA[block_code].HIGHLIGHT_COLOR);
         }
     }
 }

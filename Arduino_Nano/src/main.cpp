@@ -1,306 +1,335 @@
-// #include <Arduino.h>
-// #include <gui.h>
-// #include <ui.h>
-// #include <Tetris.h>
+#include <Arduino.h>
+#include <gui.h>
+#include <ui.h>
+#include <Tetris.h>
 
 
-// ST7789V lcd = ST7789V();
+ST7789V lcd = ST7789V();
 
-// Button_Grid button_grid = Button_Grid(8, 10, 0x24);
+Button_Grid button_grid = Button_Grid(8, 10, 0x24);
 
 
-// void tetris_game() {
-//     Tetris_Board board = Tetris_Board(0, 0, 176, 8);
+uint8_t tetris_pause() {
+    Menu m = Menu(0x12, lcd.rgb(0,0,0));
 
-//     uint16_t time_to_drop = 1000;
-//     uint16_t time_to_move = 3000;
+    if (true) { // setup
+        m.init();
 
-//     unsigned long time_of_last_drop = 0;
-//     unsigned long time_of_last_move = 0;
+        m.add_button(lcd, 0, 0, 60, 100, 120, 50, (char*)"resume", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
+        m.add_button(lcd, 0, 1, 70, 170, 100, 50, (char*)"exit", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
 
-//     bool first_hold_state = true;
-//     bool hold_allowed_state = true;
+        m.draw(); 
+    }
 
-//     if (true) { // setup
-//         board.draw(lcd);
+    while (true) { // loop
+        switch (button_grid.scan()) {
+        case 0xFF:
+            break;
+        case 0x10:
+            m.move(2);
+            break;
+        case 0x11:
+            m.move(1);
+            break;
+        case 0x12:
+            m.move(0);
+            break;
+        case 0x13:
+            m.move(3);
+            break;
+        case 0x02:
+            switch (m.get_position()) {
+            case 0x00:
+                m.undraw();
+                return 0;
+            case 0x01:
+                m.undraw();
+                return 1;
+            }
+            break;
+        }
+    }
+}
+
+void tetris_game() {
+    Tetris_Board board = Tetris_Board(0, 0, 176, 8);
+
+    uint16_t time_to_drop = 1000;
+    uint16_t time_to_move = 3000;
+
+    unsigned long time_of_last_drop = 0;
+    unsigned long time_of_last_move = 0;
+
+    bool first_hold_state = true;
+    bool hold_allowed_state = true;
+
+    if (true) { // setup
+        board.draw(lcd);
         
-//         board.add_next_block();
-//         board.draw(lcd);
-//         time_of_last_drop = millis();
-//         time_of_last_move = millis();
+        board.add_next_block();
+        board.draw(lcd);
+        time_of_last_drop = millis();
+        time_of_last_move = millis();
 
-//         board.display_future_blocks(lcd);
-//     }
+        board.display_future_blocks(lcd);
+    }
 
-//     while (true) { // loop
-//         uint8_t* scan_output = button_grid.scan();
-//         for (int i = 1; i < scan_output[0]; i++) {
-//             switch (scan_output[i]) {
-//             case 0xFF:
-//                 break;
-//             case 0x10:
-//                 if (board.move_block(TETRIS_DIRECTION::LEFT)) {
-//                     board.draw(lcd);
-//                     time_of_last_move = millis();
-//                 }
-//                 break;
-//             case 0x11:
-//                 if (board.move_block(TETRIS_DIRECTION::DOWN)) {
-//                     board.draw(lcd);
-//                     time_of_last_move = millis();
-//                 }
-//                 break;
-//             case 0x12:
-//                 board.drop();
-//                 board.draw(lcd);
-//                 time_of_last_drop = 0;
-//                 time_of_last_move = millis() + time_to_move;
-//                 break;
-//             case 0x13:
-//                 if (board.move_block(TETRIS_DIRECTION::RIGHT)) {
-//                     board.draw(lcd);
-//                     time_of_last_move = millis();
-//                 }
-//                 break;
-//             case 0x00:
-//                 if (board.rotate_block(TETRIS_DIRECTION::CCW)) {
-//                     board.draw(lcd);
-//                     time_of_last_move = millis();
-//                 }
-//                 break;
-//             case 0x01:
-//                 if (hold_allowed_state) {
-//                     hold_allowed_state = false;
-//                     board.hold();
-//                     board.draw(lcd);
-//                     if (first_hold_state) {
-//                         first_hold_state = false;
-//                         board.display_future_blocks(lcd);
-//                     }
-//                     board.display_hold_block(lcd);
-//                     time_of_last_drop = millis();
-//                     time_of_last_move = millis();
-//                 }
-//                 break;
-//             case 0x02:
-//                 return;
-//             case 0x03:
-//                 if (board.rotate_block(TETRIS_DIRECTION::CW)) {
-//                     board.draw(lcd);
-//                     time_of_last_move = millis();
-//                 }
-//                 break;
-//             }
-//         }
+    while (true) { // loop
+        uint8_t scan_output = button_grid.scan();
 
-//         if (millis() - time_of_last_drop >= time_to_drop) {
-//             if (board.move_block(TETRIS_DIRECTION::DOWN)) {
-//                 board.draw(lcd);
-//                 time_of_last_drop = millis();
-//                 time_of_last_move = millis();
-//             }
-//         }
-
-//         if (millis() - time_of_last_move >= time_to_move) {
-//             if (board.get_block_y() <= 1) {
-//                 return;
-//             }
-
-//             hold_allowed_state = true;
-
-//             board.clear_completed_lines();
-//             board.draw(lcd);
-
-//             board.add_next_block();
-//             board.draw(lcd);
-//             time_of_last_drop = millis();
-//             time_of_last_move = millis();
-
-//             board.display_future_blocks(lcd);
-//         }
-//     }
-// }
+        switch (scan_output) {
+        case 0xFF:
+            break;
+        case 0x10:
+            if (board.move_block(TETRIS_DIRECTION::LEFT)) {
+                board.draw(lcd);
+                time_of_last_move = millis();
+            }
+            break;
+        case 0x11:
+            if (board.move_block(TETRIS_DIRECTION::DOWN)) {
+                board.draw(lcd);
+                time_of_last_move = millis();
+            }
+            break;
+        case 0x12:
+            board.drop();
+            board.draw(lcd);
+            time_of_last_drop = 0;
+            time_of_last_move = millis() + time_to_move;
+            break;
+        case 0x13:
+            if (board.move_block(TETRIS_DIRECTION::RIGHT)) {
+                board.draw(lcd);
+                time_of_last_move = millis();
+            }
+            break;
+        case 0x00:
+            if (board.rotate_block(TETRIS_DIRECTION::CCW)) {
+                board.draw(lcd);
+                time_of_last_move = millis();
+            }
+            break;
+        case 0x01:
+            if (hold_allowed_state) {
+                hold_allowed_state = false;
+                board.hold();
+                board.draw(lcd);
+                if (first_hold_state) {
+                    first_hold_state = false;
+                    board.display_future_blocks(lcd);
+                }
+                board.display_hold_block(lcd);
+                time_of_last_drop = millis();
+                time_of_last_move = millis();
+            }
+            break;
+        case 0x02:
+            if (tetris_pause() == 0) {
+                board.draw(lcd, true);
+                board.display_future_blocks(lcd);
+            } else {
+                lcd.fill();
+                return;
+            }
+            break;
+        case 0x03:
+            if (board.rotate_block(TETRIS_DIRECTION::CW)) {
+                board.draw(lcd);
+                time_of_last_move = millis();
+            }
+            break;
+        }
 
 
-// void tetris_settings_button_action(Menu m, uint8_t* scan_output) {
-//     for (int i = 1; i < scan_output[0]; i++) {
-//         switch (scan_output[i]) {
-//         case 0xFF:
-//             break;
-//         case 0x10:
-//             m.move(2);
-//             break;
-//         case 0x11:
-//             m.move(1);
-//             break;
-//         case 0x12:
-//             m.move(0);
-//             break;
-//         case 0x13:
-//             m.move(3);
-//             break;
-//         case 0x02:
-//             switch (m.get_position()) {
-//             case 0x00:
-//                 lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,0));
-//                 break;
-//             case 0x01:
-//                 lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
-//                 break;
-//             case 0x02:
-//                 m.undraw();
-//                 return;
-//                 break;
-//             }
-//             break;
-//         }
-//     }
-// }
+        if (millis() - time_of_last_drop >= time_to_drop) {
+            if (board.move_block(TETRIS_DIRECTION::DOWN)) {
+                board.draw(lcd);
+                time_of_last_drop = millis();
+                time_of_last_move = millis();
+            }
+        }
 
-// void tetris_settings() {
-//     Menu m = Menu(0x13, lcd.rgb(0,0,0));
+        if (millis() - time_of_last_move >= time_to_move) {
+            if (board.get_block_y() <= 1) {
+                return;
+            }
 
-//     if (true) { // setup
-//         m.init();
+            hold_allowed_state = true;
 
-//         m.add_button(lcd, 0, 0, 70, 50, 100, 50, (char*)"[]", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
-//         m.add_button(lcd, 0, 1, 70, 120, 100, 50, (char*)"[]", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
-//         m.add_button(lcd, 0, 2, 70, 190, 100, 50, (char*)"[]", lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
+            board.clear_completed_lines();
+            board.draw(lcd);
 
-//         m.draw(); 
-//     }
+            board.add_next_block();
+            board.draw(lcd);
+            time_of_last_drop = millis();
+            time_of_last_move = millis();
 
-//     while (true) { // loop
-//         tetris_settings_button_action(m, button_grid.scan());
-//     }
-// }
+            board.display_future_blocks(lcd);
+        }
+    }
+}
 
 
-// void tetris_records_button_action(Menu m, uint8_t* scan_output) {
-//     for (int i = 1; i < scan_output[0]; i++) {
-//         switch (scan_output[i]) {
-//         case 0xFF:
-//             break;
-//         case 0x10:
-//             m.move(2);
-//             break;
-//         case 0x11:
-//             m.move(1);
-//             break;
-//         case 0x12:
-//             m.move(0);
-//             break;
-//         case 0x13:
-//             m.move(3);
-//             break;
-//         case 0x02:
-//             switch (m.get_position()) {
-//             case 0x00:
-//                 lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,0));
-//                 break;
-//             case 0x01:
-//                 lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
-//                 break;
-//             case 0x02:
-//                 m.undraw();
-//                 return;
-//                 break;
-//             }
-//             break;
-//         }
-//     }
-// }
+void tetris_settings() {
+    Menu m = Menu(0x13, lcd.rgb(0,0,0));
 
-// void tetris_records() {
-//     Menu m = Menu(0x13, lcd.rgb(0,0,0));
+    if (true) { // setup
+        m.init();
 
-//     if (true) { // setup
-//         m.init();
+        m.add_button(lcd, 0, 0, 70, 50, 100, 50, (char*)"[]", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
+        m.add_button(lcd, 0, 1, 70, 120, 100, 50, (char*)"[]", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
+        m.add_button(lcd, 0, 2, 70, 190, 100, 50, (char*)"[]", lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
 
-//         m.add_button(lcd, 0, 0, 70, 50, 100, 50, (char*)"[]", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
-//         m.add_button(lcd, 0, 1, 70, 120, 100, 50, (char*)"[]", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
-//         m.add_button(lcd, 0, 2, 70, 190, 100, 50, (char*)"[]", lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
+        m.draw(); 
+    }
 
-//         m.draw(); 
-//     }
-
-//     while (true) { // loop
-//         tetris_records_button_action(m, button_grid.scan());
-//     }
-// }
+    while (true) { // loop
+         switch (button_grid.scan()) {
+        case 0xFF:
+            break;
+        case 0x10:
+            m.move(2);
+            break;
+        case 0x11:
+            m.move(1);
+            break;
+        case 0x12:
+            m.move(0);
+            break;
+        case 0x13:
+            m.move(3);
+            break;
+        case 0x02:
+            switch (m.get_position()) {
+            case 0x00:
+                lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,0));
+                break;
+            case 0x01:
+                lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
+                break;
+            case 0x02:
+                m.undraw();
+                return;
+            }
+            break;
+        }
+    }
+}
 
 
-// void tetris_menu_button_action(Menu m, uint8_t* scan_output) {
-//     for (int i = 1; i < scan_output[0]; i++) {
-//         switch (scan_output[i]) {
-//         case 0xFF:
-//             break;
-//         case 0x10:
-//             m.move(2);
-//             break;
-//         case 0x11:
-//             m.move(1);
-//             break;
-//         case 0x12:
-//             m.move(0);
-//             break;
-//         case 0x13:
-//             m.move(3);
-//             break;
-//         case 0x02:
-//             switch (m.get_position()) {
-//             case 0x00:
-//                 m.undraw();
-//                 tetris_game();
-//                 m.draw();
-//                 return;
-//             case 0x01:
-//                 m.undraw();
-//                 tetris_settings();
-//                 m.draw();
-//                 return;
-//             case 0x02:
-//                 m.undraw();
-//                 tetris_settings();
-//                 m.draw();
-//                 return;
-//             }
-//             break;
-//         }
-//     }
-// }
+void tetris_records() {
+    Menu m = Menu(0x13, lcd.rgb(0,0,0));
 
-// void tetris_menu() {
-//     Menu m = Menu(0x13, lcd.rgb(0,0,0));
+    if (true) { // setup
+        m.init();
 
-//     if (true) { // setup
-//         m.init();
+        m.add_button(lcd, 0, 0, 70, 50, 100, 50, (char*)"[]", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
+        m.add_button(lcd, 0, 1, 70, 120, 100, 50, (char*)"[]", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
+        m.add_button(lcd, 0, 2, 70, 190, 100, 50, (char*)"[]", lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
 
-//         m.add_button(lcd, 0, 0, 70, 50, 100, 50, (char*)"play", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
-//         m.add_button(lcd, 0, 1, 45, 120, 150, 50, (char*)"settings", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
-//         m.add_button(lcd, 0, 2, 70, 190, 100, 50, (char*)"records", lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
+        m.draw(); 
+    }
 
-//         m.draw(); 
-//     }
-
-//     while (true) { // loop
-//         tetris_menu_button_action(m, button_grid.scan());
-//     }
-// }
+    while (true) { // loop
+        switch (button_grid.scan()) {
+        case 0xFF:
+            break;
+        case 0x10:
+            m.move(2);
+            break;
+        case 0x11:
+            m.move(1);
+            break;
+        case 0x12:
+            m.move(0);
+            break;
+        case 0x13:
+            m.move(3);
+            break;
+        case 0x02:
+            switch (m.get_position()) {
+            case 0x00:
+                lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,0));
+                break;
+            case 0x01:
+                lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
+                break;
+            case 0x02:
+                m.undraw();
+                return;
+            }
+            break;
+        }
+    }
+}
 
 
-// int main(void) {
-//     init();
+void tetris_menu() {
+    Menu m = Menu(0x13, lcd.rgb(0,0,0));
 
-//     // Serial.begin(115200);
-//     // Serial.println(1);
+    if (true) { // setup
+        m.init();
 
-//     lcd.Init();
-//     lcd.fill();
+        m.add_button(lcd, 0, 0, 70, 50, 100, 50, (char*)"play", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
+        m.add_button(lcd, 0, 1, 45, 120, 150, 50, (char*)"settings", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
+        m.add_button(lcd, 0, 2, 70, 190, 100, 50, (char*)"records", lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
 
-//     button_grid.init();
+        m.draw(); 
+    }
 
-//     tetris_menu();
+    while (true) { // loop
+        switch (button_grid.scan()) {
+        case 0xFF:
+            break;
+        case 0x10:
+            m.move(2);
+            break;
+        case 0x11:
+            m.move(1);
+            break;
+        case 0x12:
+            m.move(0);
+            break;
+        case 0x13:
+            m.move(3);
+            break;
+        case 0x02:
+            switch (m.get_position()) {
+            case 0x00:
+                m.undraw();
+                tetris_game();
+                m.draw();
+                break;
+            case 0x01:
+                m.undraw();
+                tetris_settings();
+                m.draw();
+                break;
+            case 0x02:
+                m.undraw();
+                tetris_settings();
+                m.draw();
+                break;
+            }
+            break;
+        }
+    }
+}
+
+
+int main(void) {
+    init();
+
+    // Serial.begin(115200);
+    // Serial.println(1);
+
+    lcd.Init();
+    lcd.fill();
+
+    button_grid.init();
+
+    tetris_menu();
         
-//     return 0;
-// }
+    return 0;
+}
