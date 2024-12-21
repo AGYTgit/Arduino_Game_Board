@@ -6,7 +6,10 @@ void ST7789V::LCD_write(uint8_t d) {
     // PORTD = (PORTD & 0b00000011) | ((d) & 0b11111100);
     // PORTB = (PORTB & 0b11111100) | ((d) & 0b00000011);
 
-    PORTD = d;
+    // PORTD = d;
+
+    PORTD = (PORTD & 0b00000011) | ((d) & 0b11111100);
+    PORTC = (PORTC & 0b11001111) | ((d << 4) & 0b00110000);
     
     digitalWrite(LCD_WR, HIGH);
 }
@@ -28,9 +31,13 @@ void ST7789V::Init() {
     // DDRC = DDRC | B00011111;
     // PORTC = PORTC | B00011111;
 
-    DDRD = B11111111;
-    DDRC = DDRC | B00011111;
-    PORTC = PORTC | B00011111;
+    // DDRD = B11111111;
+    // DDRC = DDRC | B00011111;
+    // PORTC = PORTC | B00011111;
+
+    DDRD = B11111100;
+    DDRC = DDRC | B00111111;
+    PORTC = PORTC | B00111111;
 
 
     digitalWrite(LCD_RST, HIGH);
