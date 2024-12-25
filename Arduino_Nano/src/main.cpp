@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <EEPROM.h>
 #include <gui.h>
 #include <ui.h>
 #include <Tetris.h>
@@ -318,11 +319,23 @@ void tetris_menu() {
 }
 
 
+uint16_t read(int address) {
+    uint16_t output;
+    EEPROM.get(address, output);  // Correctly read uint16_t
+    return output;
+}
+
+void write(int address, uint16_t input) {
+    EEPROM.put(address, input);  // Correctly write uint16_t
+}
+
+
 int main(void) {
     init();
 
-    // Serial.begin(115200);
-    // Serial.println(1);
+    Serial.begin(115200);
+    Serial.println(1);
+    Serial.println(read(0));
 
     lcd.Init();
     lcd.fill();
