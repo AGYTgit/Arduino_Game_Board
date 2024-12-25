@@ -2,6 +2,7 @@
 #define TETRIS_BOARD_H
 
 #include <Arduino.h>
+#include <EEPROM.h>
 
 #include <gui.h>
 
@@ -27,7 +28,11 @@ public:
 
     void hold();
 
-    uint8_t clear_completed_lines();
+    void clear_completed_lines(ST7789V& lcd);
+
+    void update_score(ST7789V& lcd, uint8_t cleared_lines);
+
+    void draw_score();
 
     int8_t get_block_y();
 
@@ -35,6 +40,8 @@ public:
     void display_hold_block(ST7789V& lcd);
 
 private:
+    uint16_t score;
+
     int16_t board_pos_x;
     int16_t board_pos_y;
     // 3D array to store state of each grid block (present, next update)

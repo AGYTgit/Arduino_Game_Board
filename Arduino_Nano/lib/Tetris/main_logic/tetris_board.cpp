@@ -239,7 +239,7 @@ void Tetris_Board::hold() {
     }
 }
 
-uint8_t Tetris_Board::clear_completed_lines() {
+void Tetris_Board::clear_completed_lines(ST7789V& lcd) {
     int cleared_lines = 0;
     
     for (int y = TETRIS_BOARD::HEIGHT - 1; y >= 0; y--) {
@@ -269,11 +269,29 @@ uint8_t Tetris_Board::clear_completed_lines() {
         cleared_lines++;
         y++;
     }
-    return cleared_lines;
+
+    this->update_score(lcd, cleared_lines);
 }
 
 int8_t Tetris_Board::get_block_y() {
     return this->block.Y;
+}
+
+
+void Tetris_Board::update_score(ST7789V& lcd, uint8_t cleared_lines) {
+    if (cleared_lines == 1) {
+        this->score += 1;
+    } else if (cleared_lines == 2) {
+        this->score += 2;
+    } else if (cleared_lines == 3) {
+        this->score += 3;
+    } else if (cleared_lines == 4) {
+        this->score += 4;
+    }
+
+    lcd.draw_text(180, 300, 60, 20, 2, 2, score, lcd.rgb(255,255,255));
+
+    EEPROM.put(SCORE::ADDRESS, score);
 }
 
 

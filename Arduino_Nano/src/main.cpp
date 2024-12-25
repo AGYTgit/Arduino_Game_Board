@@ -55,6 +55,8 @@ uint8_t tetris_pause() {
 void tetris_game() {
     Tetris_Board board = Tetris_Board(0, 0, 176, 8);
 
+    uint16_t score = 0;
+
     uint16_t time_to_drop = 1000;
     uint16_t time_to_move = 3000;
 
@@ -158,8 +160,6 @@ void tetris_game() {
 
             hold_allowed_state = true;
 
-            board.clear_completed_lines();
-            board.draw(lcd);
 
             board.add_next_block();
             board.draw(lcd);
@@ -167,6 +167,10 @@ void tetris_game() {
             time_of_last_move = millis();
 
             board.display_future_blocks(lcd);
+
+
+            board.clear_completed_lines(lcd);
+            board.draw(lcd);
         }
     }
 }
