@@ -30,7 +30,7 @@ public:
 
     void clear_completed_lines(ST7789V& lcd);
 
-    void update_score(ST7789V& lcd, uint8_t cleared_lines);
+    void update_score(ST7789V& lcd);
 
     void draw_score();
 
@@ -41,6 +41,7 @@ public:
 
 private:
     uint16_t score;
+    uint8_t cleared_lines;
 
     int16_t board_pos_x;
     int16_t board_pos_y;
