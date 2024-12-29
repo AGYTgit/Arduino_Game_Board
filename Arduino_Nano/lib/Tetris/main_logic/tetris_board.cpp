@@ -298,7 +298,32 @@ void Tetris_Board::update_score(ST7789V& lcd) {
     sprintf(buffer, "%u", this->score);
     lcd.draw_text(180, 0, 60, 20, 2, 2, buffer, lcd.rgb(255,255,255));
 
-    EEPROM.put(SCORE::ADDRESS, this->score);
+    this->save_score();
+}
+
+void Tetris_Board::save_score() {
+    uint16_t sc[5];
+
+    for (uint8_t i = 0; i < 5; i++) {
+        sc[i] = EEPROM.get(i * 2, sc[i]);
+    }
+
+    for (uint8_t i = 0; i < 5; i++) {
+        if (this->score > sc[i]) {
+            for (uint8_t j = 4; j > i; j--) {
+                EEPROM.put(j * 2, sc[j - 1]);
+            }
+            EEPROM.put(i * 2, this->score);
+            break;
+        }
+    }
+}
+
+void Tetris_Board::display_score() {
+    for (uint8_t i = 0; i < 5; i++) {
+        uint16_t s = EEPROM.get(i * 2, s);
+        Serial.println(s);
+    }
 }
 
 

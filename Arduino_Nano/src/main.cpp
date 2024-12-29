@@ -10,6 +10,17 @@ ST7789V lcd = ST7789V();
 Button_Grid button_grid = Button_Grid(8, 10, 0x24);
 
 
+uint16_t read(int address) {
+    uint16_t output;
+    EEPROM.get(address, output);
+    return output;
+}
+
+void write(int address, uint16_t input) {
+    EEPROM.put(address, input);
+}
+
+
 uint8_t tetris_pause() {
     Menu m = Menu(0x12, lcd.rgb(0,0,0));
 
@@ -176,51 +187,51 @@ void tetris_game() {
 }
 
 
-void tetris_settings() {
-    Menu m = Menu(0x13, lcd.rgb(0,0,0));
+// void tetris_settings() {
+//     Menu m = Menu(0x13, lcd.rgb(0,0,0));
 
-    if (true) { // setup
-        m.init();
+//     if (true) { // setup
+//         m.init();
 
-        m.add_button(lcd, 0, 0, 70, 50, 100, 50, (char*)"[]", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
-        m.add_button(lcd, 0, 1, 70, 120, 100, 50, (char*)"[]", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
-        m.add_button(lcd, 0, 2, 70, 190, 100, 50, (char*)"[]", lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
+//         m.add_button(lcd, 0, 0, 70, 50, 100, 50, (char*)"[]", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
+//         m.add_button(lcd, 0, 1, 70, 120, 100, 50, (char*)"[]", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
+//         m.add_button(lcd, 0, 2, 70, 190, 100, 50, (char*)"[]", lcd.rgb(255,255,255), 2, lcd.rgb(255,0,255));
 
-        m.draw(); 
-    }
+//         m.draw(); 
+//     }
 
-    while (true) { // loop
-        switch (button_grid.scan()) {
-        case 0xFF:
-            break;
-        case 0x10:
-            m.move(2);
-            break;
-        case 0x11:
-            m.move(1);
-            break;
-        case 0x12:
-            m.move(0);
-            break;
-        case 0x13:
-            m.move(3);
-            break;
-        case 0x02:
-            switch (m.get_position()) {
-            case 0x00:
-                lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,0));
-                break;
-            case 0x01:
-                lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
-                break;
-            case 0x02:
-                m.undraw();
-                return;
-            }
-            break;
-        }
-    }
-}
+//     while (true) { // loop
+//         switch (button_grid.scan()) {
+//         case 0xFF:
+//             break;
+//         case 0x10:
+//             m.move(2);
+//             break;
+//         case 0x11:
+//             m.move(1);
+//             break;
+//         case 0x12:
+//             m.move(0);
+//             break;
+//         case 0x13:
+//             m.move(3);
+//             break;
+//         case 0x02:
+//             switch (m.get_position()) {
+//             case 0x00:
+//                 lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,0));
+//                 break;
+//             case 0x01:
+//                 lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
+//                 break;
+//             case 0x02:
+//                 m.undraw();
+//                 return;
+//             }
+//             break;
+//         }
+//     }
+// }
 
 
 void tetris_records() {
@@ -255,10 +266,16 @@ void tetris_records() {
         case 0x02:
             switch (m.get_position()) {
             case 0x00:
-                lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,0));
+                // lcd.draw_rect(0, 0, 25, 25, lcd.rgb(255,0,0));
+                write(0, 187);
+                write(2, 3);
+                write(4, 2);
+                write(6, 1);
+                write(8, 0);
                 break;
             case 0x01:
                 lcd.draw_rect(0, 0, 25, 25, lcd.rgb(0,0,255));
+                Tetris_Board::display_score();
                 break;
             case 0x02:
                 m.undraw();
@@ -271,14 +288,14 @@ void tetris_records() {
 
 
 void tetris_menu() {
-    Menu m = Menu(0x13, lcd.rgb(0,0,0));
+    Menu m = Menu(0x12, lcd.rgb(0,0,0));
 
     if (true) { // setup
         m.init();
 
         m.add_button(lcd, 0, 0, 70, 50, 100, 50, (char*)"PLAY", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
-        m.add_button(lcd, 0, 1, 45, 120, 150, 50, (char*)"SETTINGS", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
-        m.add_button(lcd, 0, 2, 55, 190, 130, 50, (char*)"RECORDS", lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
+        // m.add_button(lcd, 0, 1, 45, 120, 150, 50, (char*)"SETTINGS", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
+        m.add_button(lcd, 0, 1, 55, 190, 130, 50, (char*)"RECORDS", lcd.rgb(255,0,255), 2, lcd.rgb(255,255,255));
 
         m.draw(); 
     }
@@ -306,31 +323,20 @@ void tetris_menu() {
                 tetris_game();
                 m.draw();
                 break;
+            // case 0x01:
+            //     m.undraw();
+            //     tetris_settings();
+            //     m.draw();
+            //     break;
             case 0x01:
                 m.undraw();
-                tetris_settings();
-                m.draw();
-                break;
-            case 0x02:
-                m.undraw();
-                tetris_settings();
+                tetris_records();
                 m.draw();
                 break;
             }
             break;
         }
     }
-}
-
-
-uint16_t read(int address) {
-    uint16_t output;
-    EEPROM.get(address, output);
-    return output;
-}
-
-void write(int address, uint16_t input) {
-    EEPROM.put(address, input);
 }
 
 

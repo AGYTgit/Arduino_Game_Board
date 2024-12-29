@@ -31,6 +31,8 @@ public:
     void clear_completed_lines(ST7789V& lcd);
 
     void update_score(ST7789V& lcd);
+    void save_score();
+    static void display_score();
 
     void draw_score();
 

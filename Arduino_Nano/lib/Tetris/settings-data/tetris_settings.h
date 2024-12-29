@@ -32,8 +32,4 @@ namespace TETRIS_DIRECTION {
     const int8_t CCW = 1;
 } // namespace TETRIS_DIRECTION
 
-namespace SCORE {
-    const uint16_t ADDRESS = 0;
-}
-
 #endif // TETRIS_SETTINGS_H
