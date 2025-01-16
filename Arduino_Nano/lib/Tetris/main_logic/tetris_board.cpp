@@ -297,8 +297,6 @@ void Tetris_Board::update_score(ST7789V& lcd) {
     char buffer[6];
     sprintf(buffer, "%u", this->score);
     lcd.draw_text(180, 0, 60, 20, 2, 2, buffer, lcd.rgb(255,255,255));
-
-    this->save_score();
 }
 
 void Tetris_Board::save_score() {

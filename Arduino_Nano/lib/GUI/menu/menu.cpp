@@ -1,6 +1,6 @@
 #include "menu.h"
 
-Menu::Menu(uint8_t _button_grid_dimensions, uint16_t _bg_color, uint8_t _max_text_count=0) :
+Menu::Menu(uint8_t _button_grid_dimensions, uint16_t _bg_color, uint8_t _max_text_count) :
     button_grid_dimensions(_button_grid_dimensions), bg_color(_bg_color), selected_position(0), text_count(0), max_text_count(_max_text_count) {}
 
 Menu::~Menu() {
@@ -28,7 +28,7 @@ void Menu::init() {
         }
     }
 
-    this->texts = new Text[this->max_text_count]; // Allocate space for up to max_text_count text elements
+    this->texts = new Text[this->max_text_count];
     this->text_count = 0;
 }
 
@@ -39,9 +39,9 @@ void Menu::add_button(ST7789V& lcd, uint8_t button_grid_pos_x, uint8_t button_gr
     }
 }
 
-void Menu::add_text(uint16_t pos_x, uint16_t pos_y, uint16_t width, uint16_t height, uint8_t scale, int8_t spacing, const char* text, uint16_t color) {
-    if (text_count < this->max_text_count) { // Ensure we don't exceed the allocated space
-        this->texts[text_count++] = {pos_x, pos_y, width, height, scale, spacing, strdup(text), color};
+void Menu::add_text(uint16_t pos_x, uint16_t pos_y, uint16_t width, uint16_t height, const char* text) {
+    if (text_count < this->max_text_count) {
+        this->texts[text_count++] = {pos_x, pos_y, width, height, strdup(text)};
     }
 }
 
@@ -54,8 +54,8 @@ void Menu::draw(ST7789V& lcd) {
         }
     }
 
-    for (uint8_t i = 0; i < text_count; ++i) {
-        lcd.draw_text(this->texts[i].pos_x, this->texts[i].pos_y, this->texts[i].width, this->texts[i].height, this->texts[i].scale, this->texts[i].spacing, this->texts[i].text, this->texts[i].color);
+    for (uint8_t i = 0; i < text_count; i++) {
+        lcd.draw_text(this->texts[i].pos_x, this->texts[i].pos_y, this->texts[i].width, this->texts[i].height, this->text_scale, this->text_spacing, this->texts[i].text, this->text_color);
     }
 
     this->move(-1);
@@ -71,7 +71,7 @@ void Menu::undraw(ST7789V& lcd) {
     }
 
     for (uint8_t i = 0; i < text_count; ++i) {
-        lcd.draw_text(this->texts[i].pos_x, this->texts[i].pos_y, this->texts[i].width, this->texts[i].height, this->texts[i].scale, this->texts[i].spacing, this->texts[i].text, this->bg_color);
+        lcd.draw_text(this->texts[i].pos_x, this->texts[i].pos_y, this->texts[i].width, this->texts[i].height, this->text_scale, this->text_spacing, this->texts[i].text, this->bg_color);
         free(this->texts[i].text); // Free the duplicated string
     }
     text_count = 0;

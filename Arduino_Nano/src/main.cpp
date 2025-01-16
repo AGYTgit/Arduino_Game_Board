@@ -143,8 +143,8 @@ void tetris_game() {
                 board.draw(lcd, true);
                 board.display_future_blocks(lcd);
             } else {
+                board.save_score();
                 lcd.fill();
-                board.update_score(lcd);
                 return;
             }
             break;
@@ -181,14 +181,17 @@ void tetris_game() {
 
             board.display_future_blocks(lcd);
 
+            board.update_score(lcd);
+            board.display_score();
+
             board.draw(lcd);
         }
     }
 }
 
 
-void tetris_records() {
-    Menu m = Menu(0x20, lcd.rgb(0,0,0), 5);
+bool tetris_records() {
+    Menu m = Menu(0x20, lcd.rgb(0,0,0), 10);
 
     uint16_t* scores = new uint16_t[5];
     uint8_t score_len = 0;
@@ -212,18 +215,18 @@ void tetris_records() {
         m.add_button(lcd, 0, 0, 10, 10, 220, 50, (char*)"BACK", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
 
         for (uint8_t i = 0; i < score_len; ++i) {
-            char buffer[6];
-            sprintf(buffer, "%u", scores[i]);
-            m.add_text(50, 80 + 30 * i, 100, 24, 2, 2, strdup(buffer), lcd.rgb(255,255,255));
-
-            char buffer2[4];
+            char buffer2[6];
             snprintf(buffer2, sizeof(buffer2), "%d:", i + 1);
-            m.add_text(20, 80 + 30 * i, 32, 24, 2, 2, strdup(buffer2), lcd.rgb(255,255,255));
+            m.add_text(20, 80 + 30 * i, 32, 24, strdup(buffer2));
+
+            char buffer[8];
+            sprintf(buffer, "%u", scores[i]);
+            m.add_text(50, 80 + 30 * i, 100, 24, strdup(buffer));
 
             m.add_button(lcd, 0, 1 + i, 160, 80 + 30 * i, 60, 24, (char*)"DEL", lcd.rgb(255,0,0), 2, lcd.rgb(255,255,255));
         }
 
-        m.draw(lcd); 
+        m.draw(lcd);
     }
 
     while (true) { // loop
@@ -245,26 +248,26 @@ void tetris_records() {
         case 0x02:
             if (m.get_position() == 0x00) {
                 m.undraw(lcd);
-                return;
+                return 0;
             } else if (m.get_position() > 0) {
-                uint8_t index = m.get_position() & 0x0F;
-                for (uint8_t i = score_len - 1; i >= index - 1; i--) {
+                int8_t delete_index = (m.get_position() & 0x0F) - 1;
+                for (uint8_t i = delete_index; i < score_len - 1; i++) {
                     scores[i] = scores[i + 1];
                 }
 
                 scores[score_len - 1] = 0;
 
-                for (uint8_t i = 0; i < score_len; ++i) {
+                for (int8_t i = 0; i < score_len; i++) {
                     write(i * 2, scores[i]);
                 }
                 
                 m.undraw(lcd);
-                m = Menu(0x20, lcd.rgb(0,0,0), 5); // maybe works
-                m.draw(lcd);
+                return 1;
             }
             break;
         }
     }
+    return 0;
 }
 
 
@@ -305,7 +308,7 @@ void tetris_menu() {
                 break;
             case 0x01:
                 m.undraw(lcd);
-                tetris_records();
+                while (tetris_records() == 1);
                 m.draw(lcd);
                 break;
             }
