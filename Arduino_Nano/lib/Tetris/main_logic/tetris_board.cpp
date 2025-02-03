@@ -13,8 +13,9 @@ Tetris_Board::Tetris_Board(int16_t _board_pos_x, int16_t _board_pos_y, int16_t _
 
     this->block_code_index = 0;
 
+    randomSeed(analogRead(TETRIS_BOARD::RANDOM_VALUE_PIN));
     for (int8_t i = 0; i < TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT; i++) {
-        this->block_codes[i] = analogRead(TETRIS_BOARD::RANDOM_VALUE_PIN) % TETRIS_BOARD::BLOCKS_AMOUNT;
+        this->block_codes[i] = random(0, TETRIS_BOARD::BLOCKS_AMOUNT);
     }
 
     this->held_block_code = -1;
