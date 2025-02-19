@@ -3,11 +3,6 @@
 void ST7789V::LCD_write(uint8_t d) {
     digitalWrite(LCD_WR, LOW);
 
-    // PORTD = (PORTD & 0b00000011) | ((d) & 0b11111100);
-    // PORTB = (PORTB & 0b11111100) | ((d) & 0b00000011);
-
-    // PORTD = d;
-
     PORTD = (PORTD & 0b00000011) | ((d) & 0b11111100);
     PORTC = (PORTC & 0b11001111) | ((d << 4) & 0b00110000);
     
@@ -26,26 +21,9 @@ void ST7789V::LCD_data_write(uint8_t data) {
 
 
 void ST7789V::Init() {
-    // DDRD = DDRD | B11111100;
-    // DDRB = DDRB | B00000011;
-    // DDRC = DDRC | B00011111;
-    // PORTC = PORTC | B00011111;
-
-    // DDRD = B11111111;
-    // DDRC = DDRC | B00011111;
-    // PORTC = PORTC | B00011111;
-
     DDRD = B11111100;
     DDRC = DDRC | B00111111;
     PORTC = PORTC | B00111111;
-
-
-    digitalWrite(LCD_RST, HIGH);
-    delay(5);
-    digitalWrite(LCD_RST, LOW);
-    delay(15);
-    digitalWrite(LCD_RST, HIGH);
-    delay(15);
 
     digitalWrite(LCD_CS, HIGH);
     digitalWrite(LCD_WR, HIGH);
@@ -92,7 +70,6 @@ uint16_t ST7789V::rgb(int r, int g, int b) {
   uint16_t g6 = (g >> 2) & 0x3F;  // 6 bits
   uint16_t b5 = (b >> 3) & 0x1F;  // 5 bits
 
-  // Combine the bits into a single 16-bit value
   return (r5 << 11) | (g6 << 5) | b5;
 }
 
