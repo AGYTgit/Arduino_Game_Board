@@ -66,9 +66,9 @@ void ST7789V::set_address(int16_t y1, int16_t y2, int16_t x1, int16_t x2) {
 
 
 uint16_t ST7789V::rgb(int r, int g, int b) {
-  uint16_t r5 = (r >> 3) & 0x1F;  // 5 bits
-  uint16_t g6 = (g >> 2) & 0x3F;  // 6 bits
-  uint16_t b5 = (b >> 3) & 0x1F;  // 5 bits
+  uint16_t r5 = (r >> 3);
+  uint16_t g6 = (g >> 2);
+  uint16_t b5 = (b >> 3);
 
   return (r5 << 11) | (g6 << 5) | b5;
 }
