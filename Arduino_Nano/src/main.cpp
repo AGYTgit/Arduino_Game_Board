@@ -43,10 +43,10 @@ uint8_t tetris_pause() {
         case 0x11:
             m.move(1);
             break;
-        case 0x12:
-            m.move(0);
+        case 0x01:
+            m.move(0);                                                      
             break;
-        case 0x13:
+        case 0x00:
             m.move(3);
             break;
         case 0x02:
@@ -68,6 +68,8 @@ void tetris_game() {
 
     uint16_t time_to_drop = 1000;
     uint16_t time_to_move = 3000;
+
+    float speed_modifier = 1;
 
     unsigned long time_of_last_drop = 0;
     unsigned long time_of_last_move = 0;
@@ -100,31 +102,31 @@ void tetris_game() {
                 time_of_last_move = millis();
             }
             break;
-        case 0x11:
+        case 0x13: // 0x11
             if (board.move_block(TETRIS_DIRECTION::DOWN)) {
                 board.draw(lcd);
                 time_of_last_move = millis();
             }
             break;
-        case 0x12:
+        case 0x01:
             board.drop();
             board.draw(lcd);
             time_of_last_drop = 0;
             time_of_last_move = millis() + time_to_move;
             break;
-        case 0x13:
+        case 0x00:
             if (board.move_block(TETRIS_DIRECTION::RIGHT)) {
                 board.draw(lcd);
                 time_of_last_move = millis();
             }
             break;
-        case 0x00:
+        case 0x11: // 0x13
             if (board.rotate_block(TETRIS_DIRECTION::CCW)) {
                 board.draw(lcd);
                 time_of_last_move = millis();
             }
             break;
-        case 0x01:
+        case 0x02:
             if (hold_allowed_state) {
                 hold_allowed_state = false;
                 board.hold();
@@ -138,7 +140,7 @@ void tetris_game() {
                 time_of_last_move = millis();
             }
             break;
-        case 0x02:
+        case 0x12:
             if (tetris_pause() == 0) {
                 board.draw(lcd, true);
                 board.display_future_blocks(lcd);
@@ -157,7 +159,7 @@ void tetris_game() {
         }
 
 
-        if (millis() - time_of_last_drop >= time_to_drop) {
+        if (millis() - time_of_last_drop >= time_to_drop / speed_modifier) {
             if (board.move_block(TETRIS_DIRECTION::DOWN)) {
                 board.draw(lcd);
                 time_of_last_drop = millis();
@@ -185,6 +187,9 @@ void tetris_game() {
             board.display_score();
 
             board.draw(lcd);
+
+            
+            speed_modifier = speed_modifier * 1.02f;
         }
     }
 }
@@ -215,9 +220,9 @@ bool tetris_records() {
         m.add_button(lcd, 0, 0, 10, 10, 220, 50, (char*)"BACK", lcd.rgb(0,0,255), 2, lcd.rgb(255,255,255));
 
         for (uint8_t i = 0; i < score_len; ++i) {
-            char buffer2[6];
-            snprintf(buffer2, sizeof(buffer2), "%d:", i + 1);
-            m.add_text(20, 80 + 30 * i, 32, 24, strdup(buffer2));
+            // char buffer2[6];
+            // snprintf(buffer2, sizeof(buffer2), "%d:", i + 1);
+            // m.add_text(20, 80 + 30 * i, 32, 24, strdup(buffer2));
 
             char buffer[8];
             sprintf(buffer, "%u", scores[i]);
@@ -239,10 +244,10 @@ bool tetris_records() {
         case 0x11:
             m.move(1);
             break;
-        case 0x12:
-            m.move(0);
+        case 0x01:
+            m.move(0);                                                      
             break;
-        case 0x13:
+        case 0x00:
             m.move(3);
             break;
         case 0x02:
@@ -293,10 +298,10 @@ void tetris_menu() {
         case 0x11:
             m.move(1);
             break;
-        case 0x12:
-            m.move(0);
+        case 0x01:
+            m.move(0);                                                      
             break;
-        case 0x13:
+        case 0x00:
             m.move(3);
             break;
         case 0x02:
