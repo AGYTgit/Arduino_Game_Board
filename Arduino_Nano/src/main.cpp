@@ -63,6 +63,7 @@ uint8_t tetris_pause() {
     }
 }
 
+
 void tetris_game() {
     Tetris_Board board = Tetris_Board(0, 0, 170, 136);
 
@@ -102,7 +103,7 @@ void tetris_game() {
                 time_of_last_move = millis();
             }
             break;
-        case 0x13: // 0x11
+        case 0x11:
             if (board.move_block(TETRIS_DIRECTION::DOWN)) {
                 board.draw(lcd);
                 time_of_last_move = millis();
@@ -120,7 +121,7 @@ void tetris_game() {
                 time_of_last_move = millis();
             }
             break;
-        case 0x11: // 0x13
+        case 0x13:
             if (board.rotate_block(TETRIS_DIRECTION::CCW)) {
                 board.draw(lcd);
                 time_of_last_move = millis();
@@ -169,6 +170,7 @@ void tetris_game() {
 
         if (millis() - time_of_last_move >= time_to_move) {
             if (board.get_block_y() <= 1) {
+                board.save_score();
                 return;
             }
 
