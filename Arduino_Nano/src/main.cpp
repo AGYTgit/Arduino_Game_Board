@@ -186,7 +186,6 @@ void tetris_game() {
             board.display_future_blocks(lcd);
 
             board.update_score(lcd);
-            board.display_score();
 
             board.draw(lcd);
 

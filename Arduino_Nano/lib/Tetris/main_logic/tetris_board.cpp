@@ -318,14 +318,6 @@ void Tetris_Board::save_score() {
     }
 }
 
-void Tetris_Board::display_score() {
-    for (uint8_t i = 0; i < 5; i++) {
-        uint16_t s = EEPROM.get(i * 2, s);
-        Serial.println(s);
-    }
-}
-
-
 void Tetris_Board::display_future_blocks(ST7789V& lcd) {
     lcd.draw_frame(this->display_pos_x, this->display_pos_y, TETRIS_BOARD::DISPLAY_GRID_SIZE * 4.5, TETRIS_BOARD::DISPLAY_GRID_SIZE * 2.5 * TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT, 2, lcd.rgb(75,75,75));
     lcd.draw_rect(this->display_pos_x + 2, this->display_pos_y + 2, TETRIS_BOARD::DISPLAY_GRID_SIZE * 4.5 - 4, TETRIS_BOARD::DISPLAY_GRID_SIZE * 2.5 * TETRIS_BOARD::FUTURE_BLOCKS_AMOUNT - 4, lcd.rgb(50,50,50));

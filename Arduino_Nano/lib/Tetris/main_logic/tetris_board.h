@@ -16,7 +16,6 @@ public:
     void draw(ST7789V& lcd, bool force_draw=false);
 
     void add_next_block();
-
     void add_block();
     void remove_block();
     bool check_collision();
@@ -25,16 +24,12 @@ public:
     bool rotate_block(int8_t rotate_direction=0);
 
     void drop();
-
     void hold();
 
     void clear_completed_lines(ST7789V& lcd);
 
     void update_score(ST7789V& lcd);
     void save_score();
-    static void display_score();
-
-    void draw_score();
 
     int8_t get_block_y();
 
