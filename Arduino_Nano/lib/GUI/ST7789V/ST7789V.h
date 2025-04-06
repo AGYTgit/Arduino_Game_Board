@@ -31,7 +31,8 @@ public:
 };
 
 // constexpr uint8_t SBMFont8x8_length = 93;
-// constexpr char SBMFont8x8_characters[SBMFont8x8_length + 1] = "0123456789 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-=[]\\;',./!@#$%^&*()_+{}|:\"<>?";
+// constexpr char SBMFont8x8_characters[SBMFont8x8_length + 1] =
+// "0123456789 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-=[]\\;',./!@#$%^&*()_+{}|:\"<>?";
 constexpr uint8_t SBMFont8x8_size = 8;
 constexpr uint8_t SBMFont8x8_length = 67;
 constexpr char SBMFont8x8_characters[SBMFont8x8_length + 1] = "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -45,7 +46,7 @@ constexpr uint8_t SBMFont8x8_character_bitmap[SBMFont8x8_length][SBMFont8x8_size
     {0b00011110, 0b00110000, 0b01100000, 0b01111110, 0b01100011, 0b01100011, 0b00111110, 0b00000000}, // 6
     {0b01111111, 0b01100011, 0b00000110, 0b00001100, 0b00011000, 0b00011000, 0b00011000, 0b00000000}, // 7
     {0b00111110, 0b01100011, 0b01100011, 0b00111110, 0b01100011, 0b01100011, 0b00111110, 0b00000000}, // 8
-    {0b00111110, 0b01100011, 0b01100011, 0b00111111, 0b00000011, 0b00000110, 0b00111100, 0b00000000}, // 9
+    {0b00111110, 0b01100011, 0b01100011, 0b00111111, 0b00000011, 0b00000110, 0b00111100, 0bD00000000}, // 9
 
     {0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000}, // ' '
 
